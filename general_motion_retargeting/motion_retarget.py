@@ -138,20 +138,6 @@ class GeneralMotionRetargeting:
         return uniq
     
     def setup_retarget_configuration(self):
-        
-        if self.model.nkey > 0:
-            self.model.qpos0[:] = self.model.key_qpos[0]
-        else:
-            # Initialize prismatic joints for robots with special mechanisms (e.g., KANGAROO)
-            for joint_id in range(self.model.njnt):
-                joint_type = self.model.jnt_type[joint_id]
-                if joint_type == mj.mjtJoint.mjJNT_SLIDE:  # Prismatic joint
-                    joint_range = self.model.jnt_range[joint_id]
-                    if joint_range[0] > 0:  # If lower limit is positive, joint can't be at 0
-                        # Set to middle of range
-                        mid_value = (joint_range[0] + joint_range[1]) / 2
-                        qpos_addr = self.model.jnt_qposadr[joint_id]
-
         self.configuration = mink.Configuration(self.model)
 
         self.closed_loop_equalities = self._equality_names(types=("connect", "weld"))
