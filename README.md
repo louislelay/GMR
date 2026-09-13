@@ -183,6 +183,18 @@ This repo is licensed under the [MIT License](LICENSE).
 > [!NOTE]
 > The code is tested on Ubuntu 22.04/20.04.
 
+### Option 1: uv (recommended)
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then create the environment and install GMR in one step:
+
+```bash
+uv venv --python 3.10
+uv pip install -e .
+source .venv/bin/activate
+```
+
+### Option 2: conda + pip
+
 First create your conda environment:
 
 ```bash
