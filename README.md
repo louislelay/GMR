@@ -183,17 +183,22 @@ This repo is licensed under the [MIT License](LICENSE).
 > [!NOTE]
 > The code is tested on Ubuntu 22.04/20.04.
 
-### Option 1: uv (recommended)
-
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then create the environment and install GMR in one step:
+If you do not have [uv](https://docs.astral.sh/uv/) installed, run:
 
 ```bash
-uv venv --python 3.10
-uv pip install -e .
-source .venv/bin/activate
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-### Option 2: conda + pip
+Then, from the repo root:
+
+```bash
+uv sync
+```
+
+That's it. You can now run every command in this README directly through `uv run`, no environment activation needed.
+
+<details>
+<summary>Alternative: conda + pip</summary>
 
 First create your conda environment:
 
@@ -208,13 +213,15 @@ Then, install GMR:
 pip install -e .
 ```
 
-After installing SMPLX, change `ext` in `smplx/body_models.py` from `npz` to `pkl` if you are using SMPL-X pkl files.
+With this setup, run the `uv run <script>` commands in this README as `python <script>` inside the activated environment.
 
 And to resolve some possible rendering issues:
 
 ```bash
 conda install -c conda-forge libstdcxx-ng -y
 ```
+
+</details>
 
 ## Data Preparation
 
@@ -256,7 +263,9 @@ Install PICO SDK:
         then you should see `xrobotoolkit-pc-service` in your APPs. remember to start this app before you do teleopperation.
     - Build PICO PC Service SDK and Python SDK for PICO streaming:
         ```bash
-        conda activate gmr
+        # Activate GMR's environment so the SDK installs into it
+        # (with the conda setup, use `conda activate gmr` instead).
+        source path/to/GMR/.venv/bin/activate
 
         git clone https://github.com/YanjieZe/XRoboToolkit-PC-Service-Pybind.git
         cd XRoboToolkit-PC-Service-Pybind
@@ -277,7 +286,7 @@ Install PICO SDK:
         # rm -rf tmp
 
         # Build the project
-        conda install -c conda-forge pybind11
+        pip install pybind11
         pip uninstall -y xrobotoolkit_sdk
         python setup.py install
         ```
@@ -298,7 +307,7 @@ You should be able to see the retargeted robot motion in a mujoco window.
 Retarget a single motion:
 
 ```bash
-python scripts/smplx_to_robot.py --smplx_file <path_to_smplx_data> --robot <path_to_robot_data> --save_path <path_to_save_robot_data.pkl> --rate_limit
+uv run scripts/smplx_to_robot.py --smplx_file <path_to_smplx_data> --robot <path_to_robot_data> --save_path <path_to_save_robot_data.pkl> --rate_limit
 ```
 
 By default you should see the visualization of the retargeted robot motion in a mujoco window.
@@ -309,7 +318,7 @@ If you want to record video, add `--record_video` and `--video_path <your_video_
 Retarget a folder of motions:
 
 ```bash
-python scripts/smplx_to_robot_dataset.py --src_folder <path_to_dir_of_smplx_data> --tgt_folder <path_to_dir_to_save_robot_data> --robot <robot_name>
+uv run scripts/smplx_to_robot_dataset.py --src_folder <path_to_dir_of_smplx_data> --tgt_folder <path_to_dir_to_save_robot_data> --robot <robot_name>
 ```
 
 By default there is no visualization for batch retargeting.
@@ -330,7 +339,7 @@ Then you should obtain the saved human pose data in `GVHMR/outputs/demo/tennis/h
 Then, run the command below to retarget the extracted human pose data to your robot:
 
 ```bash
-python scripts/gvhmr_to_robot.py --gvhmr_pred_file <path_to_hmr4d_results.pt> --robot unitree_g1 --record_video
+uv run scripts/gvhmr_to_robot.py --gvhmr_pred_file <path_to_hmr4d_results.pt> --robot unitree_g1 --record_video
 ```
 
 
@@ -341,7 +350,7 @@ Retarget a single motion:
 
 ```bash
 # single motion
-python scripts/bvh_to_robot.py --bvh_file <path_to_bvh_data> --robot <path_to_robot_data> --save_path <path_to_save_robot_data.pkl> --rate_limit --format <format>
+uv run scripts/bvh_to_robot.py --bvh_file <path_to_bvh_data> --robot <path_to_robot_data> --save_path <path_to_save_robot_data.pkl> --rate_limit --format <format>
 ```
 
 By default you should see the visualization of the retargeted robot motion in a mujoco window. 
@@ -352,7 +361,7 @@ By default you should see the visualization of the retargeted robot motion in a 
 Retarget a folder of motions:
 
 ```bash
-python scripts/bvh_to_robot_dataset.py --src_folder <path_to_dir_of_bvh_data> --tgt_folder <path_to_dir_to_save_robot_data> --robot <robot_name>
+uv run scripts/bvh_to_robot_dataset.py --src_folder <path_to_dir_of_bvh_data> --tgt_folder <path_to_dir_to_save_robot_data> --robot <robot_name>
 ```
 
 By default there is no visualization for batch retargeting.
@@ -372,14 +381,14 @@ pip install PyQt6 PyQt6-Qt6 PyQt6-sip
 
 
 ```bash
-python general_motion_retargeting/utils/xsens_vendor/mujoco_xsens_bvh_view.py \
+uv run general_motion_retargeting/utils/xsens_vendor/mujoco_xsens_bvh_view.py \
   --bvh_file <path_to_dir_of_bvh_data> \
   --scale <displacement scaling size> \
   --reset_to_zero
 ```
 like
 ```bash
-python general_motion_retargeting/utils/xsens_vendor/mujoco_xsens_bvh_view.py \
+uv run general_motion_retargeting/utils/xsens_vendor/mujoco_xsens_bvh_view.py \
   --scale 0.01 \
   --bvh_file assets/xsens_bvh_test/251021_04_boxing_120Hz_cm_3DsMax.bvh \
   --reset_to_zero
@@ -399,7 +408,7 @@ python general_motion_retargeting/utils/xsens_vendor/mujoco_xsens_bvh_view.py \
 #### Retarget a single motion:
 ```bash
 # single motion
-python scripts/xsens_bvh_to_robot.py \
+uv run scripts/xsens_bvh_to_robot.py \
   --bvh_file <path_to_bvh_data> \
   --robot <path_to_robot_data> \
   --save_path <path_to_save_robot_data.pkl> \
@@ -411,7 +420,7 @@ python scripts/xsens_bvh_to_robot.py \
 ```
 like
 ```bash
-python scripts/xsens_bvh_to_robot.py  \
+uv run scripts/xsens_bvh_to_robot.py  \
   --robot unitree_h1_2 \
   --scale 0.01 \
   --reset_to_zero \
@@ -481,14 +490,10 @@ Launch **Xsens MVN Software** on either Windows or Linux. You can stream from a 
 
 #### 3. Run the GMR Live Streaming Script
 
-With the Xsens MVN Network Streamer active and the conda environment loaded, run the live-streaming retargeting script. A MuJoCo window will open showing the retargeted Unitree G1 robot mirroring your movements in real time.
+With the Xsens MVN Network Streamer active, run the live-streaming retargeting script. A MuJoCo window will open showing the retargeted Unitree G1 robot mirroring your movements in real time.
 
 ```bash
-# Activate the GMR environment
-conda activate gmr
-
-# Run the Xsens live streaming retargeting script
-python scripts/xsens_live_streaming.py
+uv run scripts/xsens_live_streaming.py
 ```
 
 ### Retargeting from FBX (OptiTrack) to Robot
@@ -510,9 +515,8 @@ python poselib/fbx_importer.py --input <path_to_fbx_file.fbx> --output <path_to_
 3. Then, run the command below to retarget the extracted motion data to your robot:
 
 ```bash
-conda activate gmr
 # single motion
-python scripts/fbx_offline_to_robot.py --motion_file <path_to_saved_motion_data.pkl> --robot <path_to_robot_data> --save_path <path_to_save_robot_data.pkl> --rate_limit
+uv run scripts/fbx_offline_to_robot.py --motion_file <path_to_saved_motion_data.pkl> --robot <path_to_robot_data> --save_path <path_to_save_robot_data.pkl> --rate_limit
 ```
 
 By default you should see the visualization of the retargeted robot motion in a mujoco window. 
@@ -532,7 +536,7 @@ Find the server ip (the computer that installed with Motive) and client ip (your
 And then run:
 
 ```bash
-python scripts/optitrack_to_robot.py --server_ip <server_ip> --client_ip <client_ip> --use_multicast False --robot unitree_g1
+uv run scripts/optitrack_to_robot.py --server_ip <server_ip> --client_ip <client_ip> --use_multicast False --robot unitree_g1
 ```
 
 You should see the visualization of the retargeted robot motion in a mujoco window.
@@ -542,7 +546,7 @@ You should see the visualization of the retargeted robot motion in a mujoco wind
 Visualize a single motions:
 
 ```bash
-python scripts/vis_robot_motion.py --robot <robot_name> --robot_motion_path <path_to_save_robot_data.pkl>
+uv run scripts/vis_robot_motion.py --robot <robot_name> --robot_motion_path <path_to_save_robot_data.pkl>
 ```
 
 If you want to record video, add `--record_video` and `--video_path <your_video_path,mp4>`.
@@ -550,7 +554,7 @@ If you want to record video, add `--record_video` and `--video_path <your_video_
 Visualize a folder of motions:
 
 ```bash
-python scripts/vis_robot_motion_dataset.py --robot <robot_name> --robot_motion_folder <path_to_save_robot_data_folder>
+uv run scripts/vis_robot_motion_dataset.py --robot <robot_name> --robot_motion_folder <path_to_save_robot_data_folder>
 ```
 
 After launching the MuJoCo visualization window and clicking on it, you can use the following keyboard controls::

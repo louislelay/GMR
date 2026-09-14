@@ -1,6 +1,5 @@
 # Python
 .venv/
-uv.lock
 *.egg-info/
 __pycache__/
 *.pyc
