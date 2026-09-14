@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import smplx
 import torch
@@ -13,13 +15,44 @@ def load_smpl_file(smpl_file):
     return smpl_data
 
 
+# TODO(louis): drop this helper once smplx auto-detects the model file
+# extension upstream (https://github.com/vchoutas/smplx).
+def detect_body_model_ext(smplx_body_model_path, gender):
+    """Return the SMPL-X body model file extension ("npz" or "pkl").
+
+    smplx defaults to npz and asks users to hand-edit its source to load pkl
+    body models; instead, detect which file is actually present and pass it
+    to smplx.create explicitly.
+
+    Args:
+        smplx_body_model_path: Body models root (the folder containing smplx/).
+        gender: Body model gender ("neutral", "male", or "female").
+
+    Raises:
+        FileNotFoundError: If neither file exists, naming the paths searched.
+    """
+    model_dir = os.path.join(smplx_body_model_path, "smplx")
+    candidates = [
+        os.path.join(model_dir, f"SMPLX_{gender.upper()}.{ext}")
+        for ext in ("npz", "pkl")
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return os.path.splitext(path)[1][1:]
+    raise FileNotFoundError(
+        "No SMPL-X body model found; expected one of: " + ", ".join(candidates)
+    )
+
+
 def load_smplx_file(smplx_file, smplx_body_model_path):
     smplx_data = np.load(smplx_file, allow_pickle=True)
+    gender = str(smplx_data["gender"])
     body_model = smplx.create(
         smplx_body_model_path,
         "smplx",
-        gender=str(smplx_data["gender"]),
+        gender=gender,
         use_pca=False,
+        ext=detect_body_model_ext(smplx_body_model_path, gender),
     )
     # print(smplx_data["pose_body"].shape)
     # print(smplx_data["betas"].shape)
@@ -79,6 +112,7 @@ def load_gvhmr_pred_file(gvhmr_pred_file, smplx_body_model_path):
         "smplx",
         gender="neutral",
         use_pca=False,
+        ext=detect_body_model_ext(smplx_body_model_path, "neutral"),
     )
 
     num_frames = smpl_params_global["body_pose"].shape[0]
