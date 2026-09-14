@@ -8,7 +8,11 @@ from rich import print
 from tqdm import tqdm
 
 from general_motion_retargeting import GeneralMotionRetargeting as GMR
-from general_motion_retargeting import RobotMotionViewer
+from general_motion_retargeting import (
+    RobotMotionViewer,
+    robot_joint_names,
+    save_robot_motion,
+)
 from general_motion_retargeting.utils.lafan1 import load_bvh_file
 
 if __name__ == "__main__":
@@ -165,25 +169,33 @@ if __name__ == "__main__":
             qpos_list.append(qpos)
 
     if args.save_path is not None:
-        import pickle
-
         root_pos = np.array([qpos[:3] for qpos in qpos_list])
-        # save from wxyz to xyzw
-        root_rot = np.array([qpos[3:7][[1, 2, 3, 0]] for qpos in qpos_list])
+        root_rot_wxyz = np.array([qpos[3:7] for qpos in qpos_list])
         dof_pos = np.array([qpos[7:] for qpos in qpos_list])
-        local_body_pos = None
-        body_names = None
 
-        motion_data = {
-            "fps": motion_fps,
-            "root_pos": root_pos,
-            "root_rot": root_rot,
-            "dof_pos": dof_pos,
-            "local_body_pos": local_body_pos,
-            "link_body_list": body_names,
-        }
-        with open(args.save_path, "wb") as f:
-            pickle.dump(motion_data, f)
+        if args.save_path.endswith(".npz"):
+            save_robot_motion(
+                args.save_path,
+                motion_fps,
+                root_pos,
+                root_rot_wxyz,
+                dof_pos,
+                robot_joint_names(retargeter.model),
+            )
+        else:
+            import pickle
+
+            motion_data = {
+                "fps": motion_fps,
+                "root_pos": root_pos,
+                # legacy pickle stores xyzw
+                "root_rot": root_rot_wxyz[:, [1, 2, 3, 0]],
+                "dof_pos": dof_pos,
+                "local_body_pos": None,
+                "link_body_list": None,
+            }
+            with open(args.save_path, "wb") as f:
+                pickle.dump(motion_data, f)
         print(f"Saved to {args.save_path}")
 
     # Close progress bar
