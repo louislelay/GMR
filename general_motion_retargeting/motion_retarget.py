@@ -8,6 +8,7 @@ from rich import print
 from scipy.spatial.transform import Rotation as R
 
 from .config_validation import validate_human_frame, validate_ik_config
+from .model_loader import load_robot_model
 from .params import IK_CONFIG_DICT, ROBOT_XML_DICT
 
 # One frame of human motion: body name -> [position (3,), wxyz quaternion (4,)].
@@ -58,7 +59,14 @@ class GeneralMotionRetargeting:
         self.xml_file = str(ROBOT_XML_DICT[tgt_robot])
         if verbose:
             print("Use robot model: ", self.xml_file)
-        self.model = mj.MjModel.from_xml_path(self.xml_file)
+
+        config_path = IK_CONFIG_DICT[src_human][tgt_robot]
+        with open(config_path) as f:
+            ik_config = json.load(f)
+
+        # Tracking sites declared in the config are injected into the model,
+        # so configs can target frames the vendor XML does not define.
+        self.model = load_robot_model(self.xml_file, ik_config.get("tracking_sites"))
 
         self.robot_dof_names = {
             mj.mj_id2name(self.model, mj.mjtObj.mjOBJ_JOINT, self.model.dof_jntid[i]): i
@@ -72,6 +80,10 @@ class GeneralMotionRetargeting:
             mj.mj_id2name(self.model, mj.mjtObj.mjOBJ_ACTUATOR, i): i
             for i in range(self.model.nu)
         }
+        self.robot_site_names = {
+            mj.mj_id2name(self.model, mj.mjtObj.mjOBJ_SITE, i): i
+            for i in range(self.model.nsite)
+        }
         if verbose:
             print("[GMR] Robot Degrees of Freedom (DoF) names and their order:")
             for name, i in self.robot_dof_names.items():
@@ -83,9 +95,6 @@ class GeneralMotionRetargeting:
             for name, i in self.robot_motor_names.items():
                 print(f"Motor ID {i}: {name}")
 
-        config_path = IK_CONFIG_DICT[src_human][tgt_robot]
-        with open(config_path) as f:
-            ik_config = json.load(f)
         validate_ik_config(ik_config, self.model, str(config_path))
         if verbose:
             print("Use IK config: ", config_path)
@@ -139,9 +148,12 @@ class GeneralMotionRetargeting:
             body_name, pos_weight, rot_weight, pos_offset, rot_offset = entry
             if pos_weight == 0 and rot_weight == 0:
                 continue
+            # Bodies take precedence so that a site sharing a body's name
+            # (e.g. g1's imu_in_torso) keeps the pre-existing behavior.
+            frame_type = "body" if frame_name in self.robot_body_names else "site"
             task = mink.FrameTask(
                 frame_name=frame_name,
-                frame_type="body",
+                frame_type=frame_type,
                 position_cost=pos_weight,
                 orientation_cost=rot_weight,
                 lm_damping=1,

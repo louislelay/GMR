@@ -22,12 +22,17 @@ _REQUIRED_KEYS = (
 )
 
 
-def _model_body_names(model):
+def _model_frame_names(model):
+    """Names usable as task frames: bodies and (possibly injected) sites."""
     names = []
-    for body_id in range(model.nbody):
-        name = mj.mj_id2name(model, mj.mjtObj.mjOBJ_BODY, body_id)
-        if name is not None:
-            names.append(name)
+    for obj_type, count in (
+        (mj.mjtObj.mjOBJ_BODY, model.nbody),
+        (mj.mjtObj.mjOBJ_SITE, model.nsite),
+    ):
+        for obj_id in range(count):
+            name = mj.mj_id2name(model, obj_type, obj_id)
+            if name is not None:
+                names.append(name)
     return names
 
 
@@ -43,7 +48,7 @@ def _check_finite(values, what, where):
         raise ValueError(f"{where}: {what} contains non-finite values: {values}")
 
 
-def _validate_entry(frame_name, entry, model_bodies, scale_table, where):
+def _validate_entry(frame_name, entry, model_frames, scale_table, where):
     if not isinstance(entry, (list, tuple)) or len(entry) != 5:
         raise ValueError(
             f"{where}: entry {frame_name!r} must be "
@@ -51,10 +56,10 @@ def _validate_entry(frame_name, entry, model_bodies, scale_table, where):
         )
     human_body, pos_weight, rot_weight, pos_offset, rot_offset = entry
 
-    if frame_name not in model_bodies:
+    if frame_name not in model_frames:
         raise ValueError(
-            f"{where}: entry {frame_name!r} references a body that does not "
-            f"exist in the robot model{_suggest(frame_name, model_bodies)}"
+            f"{where}: entry {frame_name!r} references a body or site that does "
+            f"not exist in the robot model{_suggest(frame_name, model_frames)}"
         )
 
     for label, weight in (("pos_weight", pos_weight), ("rot_weight", rot_weight)):
@@ -94,7 +99,8 @@ def validate_ik_config(ik_config, model, config_path):
 
     Args:
         ik_config: Parsed JSON dict, before any in-place scaling.
-        model: Loaded MjModel of the target robot.
+        model: Loaded MjModel of the target robot, with any tracking sites
+            declared by the config already injected.
         config_path: Config path, used in error messages.
 
     Raises:
@@ -129,13 +135,13 @@ def validate_ik_config(ik_config, model, config_path):
 
     # Both tables are validated regardless of the use flags: the retargeter
     # builds tasks and offsets from both tables unconditionally.
-    model_bodies = _model_body_names(model)
+    model_frames = _model_frame_names(model)
     for table_name in ("ik_match_table1", "ik_match_table2"):
         for frame_name, entry in ik_config[table_name].items():
             _validate_entry(
                 frame_name,
                 entry,
-                model_bodies,
+                model_frames,
                 scale_table,
                 f"{where} [{table_name}]",
             )
