@@ -107,5 +107,6 @@ table keys like any body.
      scale factors shrink the target out of reach.
    - *Feet slide*: feet weights too low versus pelvis weight.
 4. **Pin the result.** `tests/` contains golden-trajectory regression tests;
-   `python tests/generate_goldens.py` regenerates goldens after an intentional
-   tuning change, and `tests/render_goldens.py` renders them for review.
+   after an intentional tuning change, regenerate the goldens with
+   `GMR_REGEN_GOLDENS=1 uv run pytest tests/test_retarget_regression.py`,
+   then attach a rendered video of the new motion to the pull request.
