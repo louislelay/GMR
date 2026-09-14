@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import smplx
 import torch
@@ -13,18 +15,45 @@ def load_smpl_file(smpl_file):
     return smpl_data
 
 
+def _normalize_gender(value: object) -> str:
+    """Normalize a scalar SMPL-X gender value."""
+    if isinstance(value, np.ndarray):
+        value = value.item()
+    if isinstance(value, (bytes, np.bytes_)):
+        value = value.decode()
+    gender = str(value).lower()
+    if gender not in {"neutral", "male", "female"}:
+        raise ValueError(f"Unsupported SMPL-X gender: {gender!r}")
+    return gender
+
+
+def detect_body_model_ext(
+    smplx_body_model_path: str | os.PathLike[str], gender: str
+) -> str:
+    """Return the available SMPL-X body-model extension."""
+    model_dir = os.path.join(smplx_body_model_path, "smplx")
+    candidates = [
+        os.path.join(model_dir, f"SMPLX_{gender.upper()}.{ext}")
+        for ext in ("npz", "pkl")
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return os.path.splitext(path)[1][1:]
+    raise FileNotFoundError(
+        "No SMPL-X body model found; expected one of: " + ", ".join(candidates)
+    )
+
+
 def load_smplx_file(smplx_file, smplx_body_model_path):
     smplx_data = np.load(smplx_file, allow_pickle=True)
+    gender = _normalize_gender(smplx_data["gender"])
     body_model = smplx.create(
         smplx_body_model_path,
         "smplx",
-        gender=str(smplx_data["gender"]),
+        gender=gender,
         use_pca=False,
+        ext=detect_body_model_ext(smplx_body_model_path, gender),
     )
-    # print(smplx_data["pose_body"].shape)
-    # print(smplx_data["betas"].shape)
-    # print(smplx_data["root_orient"].shape)
-    # print(smplx_data["trans"].shape)
 
     num_frames = smplx_data["pose_body"].shape[0]
     smplx_output = body_model(
@@ -37,7 +66,6 @@ def load_smplx_file(smplx_file, smplx_body_model_path):
         jaw_pose=torch.zeros(num_frames, 3).float(),
         leye_pose=torch.zeros(num_frames, 3).float(),
         reye_pose=torch.zeros(num_frames, 3).float(),
-        # expression=torch.zeros(num_frames, 10).float(),
         return_full_pose=True,
     )
 
@@ -52,19 +80,8 @@ def load_smplx_file(smplx_file, smplx_body_model_path):
 def load_gvhmr_pred_file(gvhmr_pred_file, smplx_body_model_path):
     gvhmr_pred = torch.load(gvhmr_pred_file)
     smpl_params_global = gvhmr_pred["smpl_params_global"]
-    # print(smpl_params_global['body_pose'].shape)
-    # print(smpl_params_global['betas'].shape)
-    # print(smpl_params_global['global_orient'].shape)
-    # print(smpl_params_global['transl'].shape)
 
     betas = np.pad(smpl_params_global["betas"][0], (0, 6))
-
-    # correct rotations
-    # rotation_matrix = np.array([[1, 0, 0], [0, 0, -1], [0, 1, 0]])
-    # rotation_quat = R.from_matrix(rotation_matrix).as_quat(scalar_first=True)
-
-    # smpl_params_global['body_pose'] = smpl_params_global['body_pose'] @ rotation_matrix
-    # smpl_params_global['global_orient'] = smpl_params_global['global_orient'] @ rotation_quat
 
     smplx_data = {
         "pose_body": smpl_params_global["body_pose"].numpy(),
@@ -79,6 +96,7 @@ def load_gvhmr_pred_file(gvhmr_pred_file, smplx_body_model_path):
         "smplx",
         gender="neutral",
         use_pca=False,
+        ext=detect_body_model_ext(smplx_body_model_path, "neutral"),
     )
 
     num_frames = smpl_params_global["body_pose"].shape[0]
@@ -92,7 +110,6 @@ def load_gvhmr_pred_file(gvhmr_pred_file, smplx_body_model_path):
         jaw_pose=torch.zeros(num_frames, 3).float(),
         leye_pose=torch.zeros(num_frames, 3).float(),
         reye_pose=torch.zeros(num_frames, 3).float(),
-        # expression=torch.zeros(num_frames, 10).float(),
         return_full_pose=True,
     )
 
