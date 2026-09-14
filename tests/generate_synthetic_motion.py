@@ -68,9 +68,12 @@ def build_frame(t):
 
 def main():
     frames = [build_frame(i / FPS) for i in range(NUM_FRAMES)]
-    data = {"fps": FPS, "frames": frames}
     out = pathlib.Path(__file__).parent / "data" / "synthetic_motion.json"
-    out.write_text(json.dumps(data, indent=None, separators=(",", ":")) + "\n")
+    # One frame per line so the file stays diffable and skimmable in review.
+    frame_lines = ",\n".join(
+        json.dumps(frame, separators=(",", ":")) for frame in frames
+    )
+    out.write_text(f'{{"fps":{FPS},"frames":[\n{frame_lines}\n]}}\n')
     print(f"wrote {NUM_FRAMES} frames to {out}")
 
 
