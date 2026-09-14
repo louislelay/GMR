@@ -2,6 +2,7 @@ import argparse
 import os
 
 from general_motion_retargeting import RobotMotionViewer, load_robot_motion
+from general_motion_retargeting.offscreen_renderer import render_robot_motion
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -11,6 +12,12 @@ if __name__ == "__main__":
 
     parser.add_argument("--record_video", action="store_true")
     parser.add_argument("--video_path", type=str, default="videos/example.mp4")
+    parser.add_argument(
+        "--offscreen",
+        action="store_true",
+        help="Render the video headlessly (no window) and exit. "
+        "Set MUJOCO_GL=egl or osmesa on machines without a display.",
+    )
 
     args = parser.parse_args()
 
@@ -29,6 +36,21 @@ if __name__ == "__main__":
         motion_local_body_pos,
         motion_link_body_list,
     ) = load_robot_motion(robot_motion_path)
+
+    if args.offscreen:
+        video_dir = os.path.dirname(args.video_path)
+        if video_dir:
+            os.makedirs(video_dir, exist_ok=True)
+        render_robot_motion(
+            robot_type,
+            motion_root_pos,
+            motion_root_rot,
+            motion_dof_pos,
+            motion_fps,
+            args.video_path,
+        )
+        print(f"Saved video to {args.video_path}")
+        raise SystemExit(0)
 
     env = RobotMotionViewer(
         robot_type=robot_type,

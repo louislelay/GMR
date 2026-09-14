@@ -44,5 +44,9 @@ jobs:
         # Locked resolution from uv.lock, so tests run against the exact
         # dependency versions the goldens were generated with.
         run: uv sync --frozen
+      - name: Install headless GL (OSMesa)
+        run: sudo apt-get update && sudo apt-get install -y libosmesa6 ffmpeg
       - name: Run tests
         run: uv run --no-sync pytest tests -v
+        env:
+          MUJOCO_GL: osmesa

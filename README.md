@@ -547,6 +547,12 @@ uv run scripts/vis_robot_motion.py --robot <robot_name> --robot_motion_path <pat
 
 If you want to record video, add `--record_video` and `--video_path <your_video_path,mp4>`.
 
+On a machine without a display (e.g. a server), render the video headlessly instead:
+
+```bash
+MUJOCO_GL=egl uv run scripts/vis_robot_motion.py --robot <robot_name> --robot_motion_path <path.pkl> --offscreen --video_path <your_video_path.mp4>
+```
+
 Visualize a folder of motions:
 
 ```bash
