@@ -6,6 +6,7 @@ import numpy as np
 from rich import print
 from scipy.spatial.transform import Rotation as R
 
+from .config_validation import validate_human_frame, validate_ik_config
 from .params import IK_CONFIG_DICT, ROBOT_XML_DICT
 
 
@@ -59,6 +60,9 @@ class GeneralMotionRetargeting:
         # Load the IK config
         with open(IK_CONFIG_DICT[src_human][tgt_robot]) as f:
             ik_config = json.load(f)
+        validate_ik_config(
+            ik_config, self.model, str(IK_CONFIG_DICT[src_human][tgt_robot])
+        )
         if verbose:
             print("Use IK config: ", IK_CONFIG_DICT[src_human][tgt_robot])
 
@@ -106,6 +110,12 @@ class GeneralMotionRetargeting:
 
         self.setup_retarget_configuration()
 
+        self.required_human_bodies = {self.human_root_name}
+        if self.use_ik_match_table1:
+            self.required_human_bodies |= set(self.human_body_to_task1)
+        if self.use_ik_match_table2:
+            self.required_human_bodies |= set(self.human_body_to_task2)
+
         self.ground_offset = 0.0
 
     def setup_retarget_configuration(self):
@@ -151,6 +161,7 @@ class GeneralMotionRetargeting:
                 self.task_errors2[task] = []
 
     def update_targets(self, human_data, offset_to_ground=False):
+        validate_human_frame(human_data, self.required_human_bodies)
         # scale human data in local frame
         human_data = self.to_numpy(human_data)
         human_data = self.scale_human_data(
