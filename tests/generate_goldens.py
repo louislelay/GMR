@@ -1,7 +1,8 @@
 """Regenerate the golden qpos trajectories used by the regression tests.
 
 Run this only when an intentional behavior change is made to the retargeting
-pipeline, and explain the change (and the golden diff) in the pull request:
+pipeline. Explain the change in the pull request and attach a rendered video
+of the new goldens so the motion can be certified by eye:
 
     python tests/generate_goldens.py
 """

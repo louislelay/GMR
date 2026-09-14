@@ -1,21 +1,21 @@
 """Golden-trajectory regression tests for the retargeting pipeline.
 
-Each test retargets a committed synthetic human motion (see
-generate_synthetic_motion.py) and compares the resulting qpos trajectory
-against a committed golden file. Any change to the IK behavior shows up as a
-diff against the goldens; intentional changes must regenerate them with
+Each test retargets a deterministic synthetic human motion (see
+synthetic_motion.py) and compares the resulting qpos trajectory against a
+committed golden file. Any change to the IK behavior shows up as a diff
+against the goldens; intentional changes must regenerate them with
 generate_goldens.py and justify the diff in the pull request.
 
 Set GMR_TEST_MOTION_DIR to a folder of AMASS-style SMPL-X .npz files to also
 run the (local-only, license-gated) real-motion smoke test.
 """
 
-import json
 import os
 import pathlib
 
 import numpy as np
 import pytest
+from synthetic_motion import build_frames
 
 from general_motion_retargeting import GeneralMotionRetargeting
 
@@ -33,17 +33,7 @@ TRACKING_ATOL = 0.05
 
 
 def load_synthetic_motion():
-    with open(DATA_DIR / "synthetic_motion.json") as f:
-        data = json.load(f)
-    frames = []
-    for frame in data["frames"]:
-        frames.append(
-            {
-                body: (np.array(values[:3]), np.array(values[3:]))
-                for body, values in frame.items()
-            }
-        )
-    return frames
+    return build_frames()
 
 
 def retarget_motion(robot, frames):

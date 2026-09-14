@@ -1,4 +1,4 @@
-"""Generate the deterministic synthetic human motion used by the regression tests.
+"""Deterministic synthetic human motion used by the regression tests.
 
 The motion is a simple parametric "march in place while moving forward" for a
 1.8 m human, expressed in the SMPL-X global-frame convention used by GMR:
@@ -8,21 +8,22 @@ All quaternions are the constant T-pose global rotation of an upright z-up
 person facing +x, which in SMPL-X convention (y-up, facing +z, left = +x) is
 the 120-degree rotation about (1, 1, 1): (0.5, 0.5, 0.5, 0.5).
 
-The file is committed at tests/data/synthetic_motion.json. Regenerate with:
-
-    python tests/generate_synthetic_motion.py
+Frames are generated in memory, in the exact input format of
+GeneralMotionRetargeting.retarget(). The goldens in tests/data were produced
+from these frames by generate_goldens.py; positions are rounded to 1e-6 m so
+the frames are bit-stable across platforms.
 """
 
-import json
 import math
-import pathlib
+
+import numpy as np
 
 FPS = 30
 NUM_FRAMES = 90
 STRIDE_HZ = 1.0
 FORWARD_SPEED = 0.3
 
-TPOSE_QUAT = [0.5, 0.5, 0.5, 0.5]
+TPOSE_QUAT = (0.5, 0.5, 0.5, 0.5)
 
 # T-pose body positions for a 1.8 m human, z-up, facing +x, left = +y.
 TPOSE_POSITIONS = {
@@ -42,8 +43,10 @@ TPOSE_POSITIONS = {
     "right_wrist": (0.0, -0.70, 1.40),
 }
 
+Frame = dict[str, tuple[np.ndarray, np.ndarray]]
 
-def build_frame(t):
+
+def _build_frame(t: float) -> Frame:
     phase = 2.0 * math.pi * STRIDE_HZ * t
     swing = math.sin(phase)
     forward = FORWARD_SPEED * t
@@ -62,20 +65,11 @@ def build_frame(t):
             px -= 0.10 * swing
         if body in ("right_elbow", "right_wrist"):
             px += 0.10 * swing
-        frame[body] = [round(v, 6) for v in (px, py, pz)] + TPOSE_QUAT
+        pos = np.array([round(v, 6) for v in (px, py, pz)])
+        frame[body] = (pos, np.array(TPOSE_QUAT))
     return frame
 
 
-def main():
-    frames = [build_frame(i / FPS) for i in range(NUM_FRAMES)]
-    out = pathlib.Path(__file__).parent / "data" / "synthetic_motion.json"
-    # One frame per line so the file stays diffable and skimmable in review.
-    frame_lines = ",\n".join(
-        json.dumps(frame, separators=(",", ":")) for frame in frames
-    )
-    out.write_text(f'{{"fps":{FPS},"frames":[\n{frame_lines}\n]}}\n')
-    print(f"wrote {NUM_FRAMES} frames to {out}")
-
-
-if __name__ == "__main__":
-    main()
+def build_frames() -> list[Frame]:
+    """All frames of the synthetic motion, ready to feed to retarget()."""
+    return [_build_frame(i / FPS) for i in range(NUM_FRAMES)]
