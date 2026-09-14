@@ -26,7 +26,7 @@
 - Support multiple humanoid robots and multiple human motion data formats (See our table below).
 
 > [!NOTE]
-> If you want this repo to support a new robot or a new human motion data format, send the robot files (`.xml`, `.urdf`, and meshes) / human motion data to <a href="mailto:lastyanjieze@gmail.com">Yanjie Ze</a> or create an issue, we will support it as soon as possible. And please make sure the robot files you sent can be open-sourced in this repo.
+> If you want this repo to support a new robot or a new human motion data format, send the robot files (`.xml`, `.urdf`, and meshes) / human motion data to <a href="mailto:lastyanjieze@gmail.com">Yanjie Ze</a> or create an issue, we will support it as soon as possible. And please make sure the robot files you sent can be open-sourced in this repo. To write or tune a retargeting config yourself, see [docs/ik_configs.md](docs/ik_configs.md).
 
 This repo is licensed under the [MIT License](LICENSE).
 
