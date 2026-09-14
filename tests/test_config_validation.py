@@ -4,7 +4,7 @@ import json
 
 import mujoco as mj
 import pytest
-from generate_synthetic_motion import TPOSE_POSITIONS, TPOSE_QUAT
+from synthetic_motion import TPOSE_POSITIONS, TPOSE_QUAT
 
 from general_motion_retargeting import (
     IK_CONFIG_DICT,
