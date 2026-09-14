@@ -8,6 +8,12 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.10 is the supported floor (requires-python), 3.13 the default
+        # development version (.python-version).
+        python: ["3.10", "3.13"]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +29,7 @@ jobs:
           sparse-checkout-cone-mode: false
       - uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.python }}
       - name: Install CPU torch
         # setup-uv already created and activated .venv (python-version is set).
         run: uv pip install torch --index-url https://download.pytorch.org/whl/cpu
