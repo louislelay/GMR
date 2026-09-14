@@ -261,30 +261,11 @@ Install PICO SDK:
         sudo dpkg -i XRoboToolkit_PC_Service_1.0.0_ubuntu_22.04_amd64.deb
         ```
         then you should see `xrobotoolkit-pc-service` in your APPs. remember to start this app before you do teleopperation.
-    - Build PICO PC Service SDK and Python SDK for PICO streaming:
+    - Build PICO PC Service SDK and Python SDK for PICO streaming (installs
+      into GMR's `.venv` by default; activate a conda env first to install
+      there instead):
         ```bash
-        git clone https://github.com/YanjieZe/XRoboToolkit-PC-Service-Pybind.git
-        cd XRoboToolkit-PC-Service-Pybind
-
-        mkdir -p tmp
-        cd tmp
-        git clone https://github.com/XR-Robotics/XRoboToolkit-PC-Service.git
-        cd XRoboToolkit-PC-Service/RoboticsService/PXREARobotSDK 
-        bash build.sh
-        cd ../../../..
-        
-
-        mkdir -p lib
-        mkdir -p include
-        cp tmp/XRoboToolkit-PC-Service/RoboticsService/PXREARobotSDK/PXREARobotSDK.h include/
-        cp -r tmp/XRoboToolkit-PC-Service/RoboticsService/PXREARobotSDK/nlohmann include/nlohmann/
-        cp tmp/XRoboToolkit-PC-Service/RoboticsService/PXREARobotSDK/build/libPXREARobotSDK.so lib/
-        # rm -rf tmp
-
-        # Install into GMR's environment from the GMR repo root.
-        cd PATH/TO/GMR
-        uv pip install pybind11 cmake
-        uv pip install --no-build-isolation PATH/TO/XRoboToolkit-PC-Service-Pybind
+        bash scripts/install_pico_sdk.sh
         ```
 
 You should be all set!
