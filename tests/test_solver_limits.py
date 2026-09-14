@@ -17,7 +17,7 @@ import pytest
 import mink
 from general_motion_retargeting import GeneralMotionRetargeting
 
-from generate_synthetic_motion import TPOSE_POSITIONS, TPOSE_QUAT
+from synthetic_motion import TPOSE_POSITIONS, TPOSE_QUAT
 
 VELOCITY_LIMIT = 3.0 * np.pi
 
