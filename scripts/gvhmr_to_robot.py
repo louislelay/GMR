@@ -1,18 +1,19 @@
 import argparse
-import pathlib
 import os
+import pathlib
 import time
 
 import numpy as np
+from rich import print
 
 from general_motion_retargeting import GeneralMotionRetargeting as GMR
 from general_motion_retargeting import RobotMotionViewer
-from general_motion_retargeting.utils.smpl import load_gvhmr_pred_file, get_gvhmr_data_offline_fast
-
-from rich import print
+from general_motion_retargeting.utils.smpl import (
+    get_gvhmr_data_offline_fast,
+    load_gvhmr_pred_file,
+)
 
 if __name__ == "__main__":
-    
     HERE = pathlib.Path(__file__).parent
 
     parser = argparse.ArgumentParser()
@@ -23,22 +24,37 @@ if __name__ == "__main__":
         # required=True,
         default="/home/yanjieze/projects/g1_wbc/GMR/GVHMR/outputs/demo/tennis/hmr4d_results.pt",
     )
-    
+
     parser.add_argument(
         "--robot",
-        choices=["unitree_g1", "unitree_g1_with_hands", "unitree_h1", "unitree_h1_2",
-                 "booster_t1", "booster_t1_29dof","stanford_toddy", "fourier_n1", 
-                "engineai_pm01", "kuavo_s45", "hightorque_hi", "galaxea_r1pro", "berkeley_humanoid_lite", "booster_k1",
-                "pnd_adam_lite", "openloong", "tienkung"],
+        choices=[
+            "unitree_g1",
+            "unitree_g1_with_hands",
+            "unitree_h1",
+            "unitree_h1_2",
+            "booster_t1",
+            "booster_t1_29dof",
+            "stanford_toddy",
+            "fourier_n1",
+            "engineai_pm01",
+            "kuavo_s45",
+            "hightorque_hi",
+            "galaxea_r1pro",
+            "berkeley_humanoid_lite",
+            "booster_k1",
+            "pnd_adam_lite",
+            "openloong",
+            "tienkung",
+        ],
         default="unitree_g1",
     )
-    
+
     parser.add_argument(
         "--save_path",
         default=None,
         help="Path to save the robot motion.",
     )
-    
+
     parser.add_argument(
         "--loop",
         default=False,
@@ -62,47 +78,46 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-
     SMPLX_FOLDER = HERE / ".." / "assets" / "body_models"
-    
-    
+
     # Load SMPLX trajectory
     smplx_data, body_model, smplx_output, actual_human_height = load_gvhmr_pred_file(
         args.gvhmr_pred_file, SMPLX_FOLDER
     )
-    
+
     # align fps
     tgt_fps = 30
-    smplx_data_frames, aligned_fps = get_gvhmr_data_offline_fast(smplx_data, body_model, smplx_output, tgt_fps=tgt_fps)
-    
-    
-   
+    smplx_data_frames, aligned_fps = get_gvhmr_data_offline_fast(
+        smplx_data, body_model, smplx_output, tgt_fps=tgt_fps
+    )
+
     # Initialize the retargeting system
     retarget = GMR(
         actual_human_height=actual_human_height,
         src_human="smplx",
         tgt_robot=args.robot,
     )
-    
-    robot_motion_viewer = RobotMotionViewer(robot_type=args.robot,
-                                            motion_fps=aligned_fps,
-                                            transparent_robot=0,
-                                            record_video=args.record_video,
-                                            video_path=f"videos/{args.robot}_{args.gvhmr_pred_file.split('/')[-1].split('.')[0]}.mp4",)
-    
+
+    robot_motion_viewer = RobotMotionViewer(
+        robot_type=args.robot,
+        motion_fps=aligned_fps,
+        transparent_robot=0,
+        record_video=args.record_video,
+        video_path=f"videos/{args.robot}_{args.gvhmr_pred_file.split('/')[-1].split('.')[0]}.mp4",
+    )
 
     curr_frame = 0
     # FPS measurement variables
     fps_counter = 0
     fps_start_time = time.time()
     fps_display_interval = 2.0  # Display FPS every 2 seconds
-    
+
     if args.save_path is not None:
         save_dir = os.path.dirname(args.save_path)
         if save_dir:  # Only create directory if it's not empty
             os.makedirs(save_dir, exist_ok=True)
         qpos_list = []
-    
+
     # Start the viewer
     i = 0
 
@@ -113,7 +128,7 @@ if __name__ == "__main__":
             i += 1
             if i >= len(smplx_data_frames):
                 break
-        
+
         # FPS measurement
         fps_counter += 1
         current_time = time.time()
@@ -122,7 +137,7 @@ if __name__ == "__main__":
             print(f"Actual rendering FPS: {actual_fps:.2f}")
             fps_counter = 0
             fps_start_time = current_time
-        
+
         # Update task targets.
         smplx_data = smplx_data_frames[i]
 
@@ -142,16 +157,17 @@ if __name__ == "__main__":
         )
         if args.save_path is not None:
             qpos_list.append(qpos)
-            
+
     if args.save_path is not None:
         import pickle
+
         root_pos = np.array([qpos[:3] for qpos in qpos_list])
         # save from wxyz to xyzw
-        root_rot = np.array([qpos[3:7][[1,2,3,0]] for qpos in qpos_list])
+        root_rot = np.array([qpos[3:7][[1, 2, 3, 0]] for qpos in qpos_list])
         dof_pos = np.array([qpos[7:] for qpos in qpos_list])
         local_body_pos = None
         body_names = None
-        
+
         motion_data = {
             "fps": aligned_fps,
             "root_pos": root_pos,
@@ -163,7 +179,5 @@ if __name__ == "__main__":
         with open(args.save_path, "wb") as f:
             pickle.dump(motion_data, f)
         print(f"Saved to {args.save_path}")
-            
-      
-    
+
     robot_motion_viewer.close()
