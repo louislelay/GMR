@@ -1,21 +1,18 @@
 {
+  "schema_version": 2,
   "robot_root_name": "base_link",
   "human_root_name": "Hips",
   "ground_height": 0.0,
   "human_height_assumption": 1.8,
-  "use_ik_match_table1": true,
-  "use_ik_match_table2": true,
   "human_scale_table": {
     "Hips": 1.2,
     "Spine2": 1.1,
-
     "LeftUpLeg": 1.1,
     "RightUpLeg": 1.1,
     "LeftLeg": 1.1,
     "RightLeg": 1.1,
     "LeftFootMod": 1.1,
     "RightFootMod": 1.1,
-
     "LeftArm": 0.8,
     "RightArm": 0.8,
     "LeftForeArm": 0.8,
@@ -23,296 +20,388 @@
     "LeftHand": 0.8,
     "RightHand": 0.8
   },
-  "ik_match_table1": {
-    "base_link": [
-      "Hips",
-      50,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.5,
-        0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "torso_2_link": [
-      "Spine2",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.5,
-        0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "leg_left_3_link": [
-      "LeftUpLeg",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        0.5,
-        0.5,
-        -0.5
-      ]
-    ],
-    "leg_left_4_link": [
-      "LeftLeg",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        0.5,
-        0.5,
-        -0.5
-      ]
-    ],
-    "leg_left_6_link": [
-      "LeftFootMod",
-      100,
-      50,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.70710678,
-        0.70710678,
-        0.0,
-        0.0
-      ]
-    ],
-    "leg_right_3_link": [
-      "RightUpLeg",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        0.5,
-        0.5,
-        -0.5
-      ]
-    ],
-    "leg_right_4_link": [
-      "RightLeg",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        0.5,
-        0.5,
-        -0.5
-      ]
-    ],
-    "leg_right_6_link": [
-      "RightFootMod",
-      100,
-      50,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.70710678,
-        0.70710678,
-        0.0,
-        0.0
-      ]
-    ],
-    "arm_left_3_link": [
-      "LeftArm",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.5,
-        0.5,
-        -0.5,
-        -0.5
-      ]
-    ],
-    "arm_left_4_link": [
-      "LeftForeArm",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        -0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "arm_left_7_link": [
-      "LeftHand",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        -0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "arm_right_3_link": [
-      "RightArm",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.5,
-        0.5,
-        -0.5,
-        -0.5
-      ]
-    ],
-    "arm_right_4_link": [
-      "RightForeArm",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        -0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "arm_right_7_link": [
-      "RightHand",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.5,
-        -0.5,
-        0.5,
-        0.5
-      ]
-    ]
-  },
-  "ik_match_table2": {
-    "base_link": [
-      "Hips",
-      10,
-      5,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.5,
-        0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "torso_2_link": [
-      "Spine2",
-      0,
-      10,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.5,
-        0.5,
-        0.5,
-        0.5
-      ]
-    ],
-    "leg_left_6_link": [
-      "LeftFootMod",
-      100,
-      50,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.70710678,
-        0.70710678,
-        0.0,
-        0.0
-      ]
-    ],
-    "leg_right_6_link": [
-      "RightFootMod",
-      100,
-      50,
-      [
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.70710678,
-        0.70710678,
-        0.0,
-        0.0
-      ]
-    ]
-  }
+  "stages": [
+    {
+      "base_link": {
+        "robot": {
+          "body": "base_link"
+        },
+        "human": {
+          "body": "Hips",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 50,
+        "orientation_weight": 10
+      },
+      "torso_2_link": {
+        "robot": {
+          "body": "torso_2_link"
+        },
+        "human": {
+          "body": "Spine2",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "leg_left_3_link": {
+        "robot": {
+          "body": "leg_left_3_link"
+        },
+        "human": {
+          "body": "LeftUpLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "leg_left_4_link": {
+        "robot": {
+          "body": "leg_left_4_link"
+        },
+        "human": {
+          "body": "LeftLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "leg_left_6_link": {
+        "robot": {
+          "body": "leg_left_6_link"
+        },
+        "human": {
+          "body": "LeftFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 50
+      },
+      "leg_right_3_link": {
+        "robot": {
+          "body": "leg_right_3_link"
+        },
+        "human": {
+          "body": "RightUpLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "leg_right_4_link": {
+        "robot": {
+          "body": "leg_right_4_link"
+        },
+        "human": {
+          "body": "RightLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "leg_right_6_link": {
+        "robot": {
+          "body": "leg_right_6_link"
+        },
+        "human": {
+          "body": "RightFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 50
+      },
+      "arm_left_3_link": {
+        "robot": {
+          "body": "arm_left_3_link"
+        },
+        "human": {
+          "body": "LeftArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "arm_left_4_link": {
+        "robot": {
+          "body": "arm_left_4_link"
+        },
+        "human": {
+          "body": "LeftForeArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "arm_left_7_link": {
+        "robot": {
+          "body": "arm_left_7_link"
+        },
+        "human": {
+          "body": "LeftHand",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "arm_right_3_link": {
+        "robot": {
+          "body": "arm_right_3_link"
+        },
+        "human": {
+          "body": "RightArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "arm_right_4_link": {
+        "robot": {
+          "body": "arm_right_4_link"
+        },
+        "human": {
+          "body": "RightForeArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "arm_right_7_link": {
+        "robot": {
+          "body": "arm_right_7_link"
+        },
+        "human": {
+          "body": "RightHand",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      }
+    },
+    {
+      "base_link": {
+        "robot": {
+          "body": "base_link"
+        },
+        "human": {
+          "body": "Hips",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "torso_2_link": {
+        "robot": {
+          "body": "torso_2_link"
+        },
+        "human": {
+          "body": "Spine2",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "leg_left_6_link": {
+        "robot": {
+          "body": "leg_left_6_link"
+        },
+        "human": {
+          "body": "LeftFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 50
+      },
+      "leg_right_6_link": {
+        "robot": {
+          "body": "leg_right_6_link"
+        },
+        "human": {
+          "body": "RightFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 50
+      }
+    }
+  ]
 }
