@@ -55,7 +55,12 @@ class XsensSource:
 
     def open(self) -> None:
         """Initialize and start the UDP adapter."""
-        from ..utils.xsens_vendor.xsens_to_gmr_adapter import XsensToGMR
+        try:
+            from ..utils.xsens_vendor.xsens_to_gmr_adapter import XsensToGMR
+        except ImportError as error:
+            raise ValueError(
+                "Xsens streaming requires an installed xsens_mvn_robot adapter"
+            ) from error
 
         adapter = XsensToGMR(port=self._port, verbose=self._verbose)
         if not adapter.initialize():
