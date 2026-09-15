@@ -1,5 +1,6 @@
 {
   "schema_version": 2,
+  "identifier": "bvh_to_unitree_g1",
   "robot_root_name": "pelvis",
   "human_root_name": "Hips",
   "ground_height": 0.0,
@@ -28,11 +29,6 @@
         },
         "human": {
           "body": "Hips",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -43,17 +39,12 @@
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "left_hip_yaw_link": {
+      "left_hip": {
         "robot": {
           "body": "left_hip_yaw_link"
         },
         "human": {
           "body": "LeftUpLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -64,17 +55,12 @@
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "left_knee_link": {
+      "left_knee": {
         "robot": {
           "body": "left_knee_link"
         },
         "human": {
           "body": "LeftLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -85,38 +71,28 @@
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "left_ankle_roll_link": {
+      "left_foot": {
         "robot": {
           "body": "left_ankle_roll_link"
         },
         "human": {
           "body": "LeftFootMod",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 50,
         "orientation_weight": 10
       },
-      "right_hip_yaw_link": {
+      "right_hip": {
         "robot": {
           "body": "right_hip_yaw_link"
         },
         "human": {
           "body": "RightUpLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -127,17 +103,12 @@
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "right_knee_link": {
+      "right_knee": {
         "robot": {
           "body": "right_knee_link"
         },
         "human": {
           "body": "RightLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -148,38 +119,28 @@
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "right_ankle_roll_link": {
+      "right_foot": {
         "robot": {
           "body": "right_ankle_roll_link"
         },
         "human": {
           "body": "RightFootMod",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 50,
         "orientation_weight": 10
       },
-      "torso_link": {
+      "torso": {
         "robot": {
           "body": "torso_link"
         },
         "human": {
           "body": "Spine2",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -190,17 +151,12 @@
         "position_weight": 0,
         "orientation_weight": 100
       },
-      "left_shoulder_yaw_link": {
+      "left_shoulder": {
         "robot": {
           "body": "left_shoulder_yaw_link"
         },
         "human": {
           "body": "LeftArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -211,59 +167,44 @@
         "position_weight": 0,
         "orientation_weight": 100
       },
-      "left_elbow_link": {
+      "left_elbow": {
         "robot": {
           "body": "left_elbow_link"
         },
         "human": {
           "body": "LeftForeArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "left_wrist_yaw_link": {
+      "left_wrist": {
         "robot": {
           "body": "left_wrist_yaw_link"
         },
         "human": {
           "body": "LeftHand",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "right_shoulder_yaw_link": {
+      "right_shoulder": {
         "robot": {
           "body": "right_shoulder_yaw_link"
         },
         "human": {
           "body": "RightArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -274,43 +215,33 @@
         "position_weight": 0,
         "orientation_weight": 100
       },
-      "right_elbow_link": {
+      "right_elbow": {
         "robot": {
           "body": "right_elbow_link"
         },
         "human": {
           "body": "RightForeArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "right_wrist_yaw_link": {
+      "right_wrist": {
         "robot": {
           "body": "right_wrist_yaw_link"
         },
         "human": {
           "body": "RightHand",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 0,
@@ -324,11 +255,6 @@
         },
         "human": {
           "body": "Hips",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -339,17 +265,12 @@
         "position_weight": 100,
         "orientation_weight": 5
       },
-      "left_hip_yaw_link": {
+      "left_hip": {
         "robot": {
           "body": "left_hip_yaw_link"
         },
         "human": {
           "body": "LeftUpLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -360,17 +281,12 @@
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "left_knee_link": {
+      "left_knee": {
         "robot": {
           "body": "left_knee_link"
         },
         "human": {
           "body": "LeftLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -381,38 +297,28 @@
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "left_ankle_roll_link": {
+      "left_foot": {
         "robot": {
           "body": "left_ankle_roll_link"
         },
         "human": {
           "body": "LeftFootMod",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 50,
         "orientation_weight": 10
       },
-      "right_hip_yaw_link": {
+      "right_hip": {
         "robot": {
           "body": "right_hip_yaw_link"
         },
         "human": {
           "body": "RightUpLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -423,17 +329,12 @@
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "right_knee_link": {
+      "right_knee": {
         "robot": {
           "body": "right_knee_link"
         },
         "human": {
           "body": "RightLeg",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.5,
             0.5,
@@ -444,38 +345,28 @@
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "right_ankle_roll_link": {
+      "right_foot": {
         "robot": {
           "body": "right_ankle_roll_link"
         },
         "human": {
           "body": "RightFootMod",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             -0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 50,
         "orientation_weight": 10
       },
-      "torso_link": {
+      "torso": {
         "robot": {
           "body": "torso_link"
         },
         "human": {
           "body": "Spine2",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -486,17 +377,12 @@
         "position_weight": 0,
         "orientation_weight": 10
       },
-      "left_shoulder_yaw_link": {
+      "left_shoulder": {
         "robot": {
           "body": "left_shoulder_yaw_link"
         },
         "human": {
           "body": "LeftArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -507,59 +393,44 @@
         "position_weight": 5,
         "orientation_weight": 100
       },
-      "left_elbow_link": {
+      "left_elbow": {
         "robot": {
           "body": "left_elbow_link"
         },
         "human": {
           "body": "LeftForeArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "left_wrist_yaw_link": {
+      "left_wrist": {
         "robot": {
           "body": "left_wrist_yaw_link"
         },
         "human": {
           "body": "LeftHand",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "right_shoulder_yaw_link": {
+      "right_shoulder": {
         "robot": {
           "body": "right_shoulder_yaw_link"
         },
         "human": {
           "body": "RightArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.5,
             0.5,
@@ -570,43 +441,33 @@
         "position_weight": 5,
         "orientation_weight": 100
       },
-      "right_elbow_link": {
+      "right_elbow": {
         "robot": {
           "body": "right_elbow_link"
         },
         "human": {
           "body": "RightForeArm",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 10,
         "orientation_weight": 5
       },
-      "right_wrist_yaw_link": {
+      "right_wrist": {
         "robot": {
           "body": "right_wrist_yaw_link"
         },
         "human": {
           "body": "RightHand",
-          "position": [
-            0.0,
-            0.0,
-            0.0
-          ],
           "rotation": [
             0.70710678,
             0.70710678,
-            0.0,
-            0.0
+            0,
+            0
           ]
         },
         "position_weight": 10,
