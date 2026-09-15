@@ -7,13 +7,12 @@ name = "general_motion_retargeting"
 version = "0.2.0"
 description = "General Motion Retargeting (GMR) for Humanoid Robots"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
     { name = "Yanjie Ze", email = "lastyanjieze@gmail.com" },
 ]
 requires-python = ">=3.10.12,<3.14"
 dependencies = [
-    "loop_rate_limiters",
     "mink",
     "mujoco",
     "numpy",
@@ -21,17 +20,11 @@ dependencies = [
     "torch",
     "qpsolvers[proxqp]",
     "rich",
-    "tqdm",
-    "opencv-python",
-    "natsort",
-    "psutil",
-    "smplx @ git+https://github.com/vchoutas/smplx",
-    "protobuf",
-    "redis[hiredis]",
     "imageio[ffmpeg]",
     "pydantic>=2.11",
     "mujoco-menagerie==2026.9.0",
     "mjviser>=0.0.14",
+    "smplx>=0.1.28",
 ]
 
 [project.urls]
@@ -51,10 +44,7 @@ dev = [
 [tool.ruff]
 extend-exclude = [
     # Vendored code keeps its upstream formatting.
-    "general_motion_retargeting/optitrack_vendor",
     "general_motion_retargeting/utils/lafan_vendor",
-    "general_motion_retargeting/utils/xsens_vendor",
-    "third_party",
 ]
 
 [tool.ruff.lint]
