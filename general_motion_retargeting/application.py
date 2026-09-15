@@ -76,6 +76,18 @@ class RetargetApplication:
             data, body_model, output, tgt_fps=target_fps
         )
         source_fps = float(np.asarray(data["mocap_frame_rate"]).item())
+        source_vertices = np.asarray(
+            output.vertices.detach().cpu().numpy(), dtype=np.float64
+        )
+        sample_times = np.linspace(
+            0.0, len(source_vertices) - 1, len(frames), dtype=np.float64
+        )
+        lower = np.floor(sample_times).astype(np.int64)
+        upper = np.minimum(lower + 1, len(source_vertices) - 1)
+        alpha = (sample_times - lower)[:, None, None]
+        vertices = (1.0 - alpha) * source_vertices[lower] + alpha * source_vertices[
+            upper
+        ]
         return HumanMotion(
             frames=tuple(frames),
             fps=float(aligned_fps),
@@ -83,6 +95,8 @@ class RetargetApplication:
             source_format="smplx",
             source_identifier=_source_identifier(path),
             source_fps=source_fps,
+            body_vertices=vertices,
+            body_faces=np.asarray(body_model.faces, dtype=np.int64),
         )
 
     def _load_bvh(self, path: Path, source: str, target_fps: float) -> HumanMotion:

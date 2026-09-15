@@ -9,6 +9,7 @@ import numpy as np
 import numpy.typing as npt
 
 FloatArray: TypeAlias = npt.NDArray[np.float64]
+IntArray: TypeAlias = npt.NDArray[np.int64]
 HumanFrame: TypeAlias = Mapping[str, tuple[FloatArray, FloatArray]]
 
 
@@ -28,6 +29,8 @@ class HumanMotion:
     source_format: str
     source_identifier: str | None = None
     source_fps: float | None = None
+    body_vertices: FloatArray | None = None
+    body_faces: IntArray | None = None
 
 
 @dataclass(frozen=True)
