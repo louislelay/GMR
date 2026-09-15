@@ -11,7 +11,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Yanjie Ze", email = "lastyanjieze@gmail.com" },
 ]
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10.12,<3.14"
 dependencies = [
     "loop_rate_limiters",
     "mink",
@@ -30,6 +30,7 @@ dependencies = [
     "redis[hiredis]",
     "imageio[ffmpeg]",
     "pydantic>=2.11",
+    "mujoco-menagerie==2026.9.0",
 ]
 
 [project.urls]
@@ -59,6 +60,9 @@ ignore = ["E722", "F403", "F841"]
 [tool.ruff.lint.per-file-ignores]
 # The package root re-exports its public API.
 "general_motion_retargeting/__init__.py" = ["F401"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.setuptools.packages.find]
 include = ["general_motion_retargeting*"]

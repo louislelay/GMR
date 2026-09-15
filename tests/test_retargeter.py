@@ -4,6 +4,8 @@ import numpy as np
 from synthetic_motion import build_frames
 from test_retarget_regression import DATA_DIR, build_retargeter
 
+from general_motion_retargeting import Retargeter, build_catalog
+
 
 def test_retargeter_matches_golden_trajectory() -> None:
     frames = build_frames()
@@ -32,9 +34,12 @@ def test_retargeter_does_not_mutate_human_frame() -> None:
 
 
 def test_retargeter_generates_one_site_per_active_match() -> None:
-    retargeter = build_retargeter("unitree_g1")
-    profile = retargeter.profile
-    plain_model = retargeter.robot.assets.load_model_spec().compile()
+    catalog = build_catalog(discover=False)
+    robot = catalog.robot("unitree_g1")
+    profile = catalog.profile("smplx", "unitree_g1")
+    plain_model = robot.assets.load_model_spec().compile()
+
+    retargeter = Retargeter(robot, profile)
 
     active_matches = sum(
         match.position_weight != 0.0 or match.orientation_weight != 0.0
