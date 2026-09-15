@@ -295,4 +295,6 @@ class Retargeter:
             root_quaternions=qpos[:, 3:7],
             joint_positions=qpos[:, 7:],
             joint_names=self._joint_names(),
+            source_identifier=motion.source_identifier,
+            source_fps=motion.source_fps,
         )
