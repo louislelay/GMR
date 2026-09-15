@@ -28,6 +28,12 @@ class _Task:
     frame: mink.FrameTask
 
 
+@dataclass(frozen=True)
+class _SiteMatch:
+    match: Match
+    site_name: str
+
+
 class Retargeter:
     """Stateful retargeting session for one robot and profile."""
 
@@ -51,10 +57,15 @@ class Retargeter:
         self.robot = robot
         self.profile = profile
         self.settings = settings or SolverSettings()
-        self.model = robot.assets.load_model_spec().compile()
+        specification = robot.assets.load_model_spec()
+        site_stages = tuple(
+            self._inject_sites(specification, stage, stage_index)
+            for stage_index, stage in enumerate(profile.stages)
+        )
+        self.model = specification.compile()
         self.configuration = mink.Configuration(self.model)
         self._validate_model_frames()
-        self._stages = tuple(self._build_stage(stage) for stage in profile.stages)
+        self._stages = tuple(self._build_stage(stage) for stage in site_stages)
         self._limits: list[mink.Limit] = [mink.ConfigurationLimit(self.model)]
         if self.settings.use_velocity_limits:
             velocities = {
@@ -75,15 +86,6 @@ class Retargeter:
             raise ValueError(
                 f"robot root body {self.robot.root_body!r} is missing from model"
             )
-        missing = {
-            match.robot.body
-            for stage in self.profile.stages
-            for match in stage
-            if match.robot.body not in body_names
-        }
-        if missing:
-            names = ", ".join(sorted(missing))
-            raise ValueError(f"robot model is missing profile bodies: {names}")
 
     def _joint_names(self) -> tuple[str, ...]:
         names: list[str] = []
@@ -96,27 +98,40 @@ class Retargeter:
             names.append(name)
         return tuple(names)
 
-    def _build_stage(self, matches: tuple[Match, ...]) -> tuple[_Task, ...]:
-        tasks: list[_Task] = []
-        for match in matches:
+    def _inject_sites(
+        self,
+        specification: mj.MjSpec,
+        matches: tuple[Match, ...],
+        stage_index: int,
+    ) -> tuple[_SiteMatch, ...]:
+        site_matches: list[_SiteMatch] = []
+        for match_index, match in enumerate(matches):
             if match.position_weight == 0.0 and match.orientation_weight == 0.0:
                 continue
-            if not np.array_equal(
-                match.robot.position, np.zeros(3, dtype=np.float64)
-            ) or not np.array_equal(
-                match.robot.rotation,
-                np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float64),
-            ):
+            parent = specification.body(match.robot.body)
+            if parent is None:
                 raise ValueError(
-                    f"match {match.identifier!r} has a robot transform; "
-                    "tracking-site injection is required"
+                    f"robot model is missing profile body {match.robot.body!r}"
                 )
+            site_name = f"_gmr_{stage_index}_{match_index}"
+            parent.add_site(
+                name=site_name,
+                pos=match.robot.position,
+                quat=match.robot.rotation,
+            )
+            site_matches.append(_SiteMatch(match=match, site_name=site_name))
+        return tuple(site_matches)
+
+    def _build_stage(self, site_matches: tuple[_SiteMatch, ...]) -> tuple[_Task, ...]:
+        tasks: list[_Task] = []
+        for site_match in site_matches:
+            match = site_match.match
             tasks.append(
                 _Task(
                     match=match,
                     frame=mink.FrameTask(
-                        frame_name=match.robot.body,
-                        frame_type="body",
+                        frame_name=site_match.site_name,
+                        frame_type="site",
                         position_cost=match.position_weight,
                         orientation_cost=match.orientation_weight,
                         lm_damping=1.0,
@@ -172,18 +187,21 @@ class Retargeter:
         tasks: tuple[_Task, ...],
         frame: dict[str, tuple[FloatArray, FloatArray]],
     ) -> None:
+        ground = self.profile.ground_height * np.array(
+            [0.0, 0.0, 1.0], dtype=np.float64
+        )
         for task in tasks:
             position, quaternion = frame[task.match.human.body]
             rotation = Rotation.from_quat(
                 quaternion, scalar_first=True
             ) * Rotation.from_quat(task.match.human.rotation, scalar_first=True)
-            ground = self.profile.ground_height * np.array(
-                [0.0, 0.0, 1.0], dtype=np.float64
+            target_position = position + rotation.apply(
+                task.match.human.position - ground
             )
             task.frame.set_target(
                 mink.SE3.from_rotation_and_translation(
                     mink.SO3(rotation.as_quat(scalar_first=True)),
-                    position + rotation.apply(task.match.human.position - ground),
+                    target_position,
                 )
             )
 
