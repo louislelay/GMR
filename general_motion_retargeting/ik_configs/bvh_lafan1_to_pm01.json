@@ -1,479 +1,617 @@
 {
-    "robot_root_name": "LINK_BASE",
-    "human_root_name": "Hips",
-    "ground_height": 0.0,
-    "human_height_assumption": 1.8,
-    "use_ik_match_table1": true,
-    "use_ik_match_table2": true,
-    "human_scale_table": {
-        "Hips": 0.85,
-        "Spine2": 0.85,
-
-        "LeftUpLeg": 0.85,
-        "RightUpLeg": 0.85,
-        "LeftLeg": 0.85,
-        "RightLeg": 0.85,
-        "LeftFootMod": 0.85,
-        "RightFootMod": 0.85,
-
-        "LeftArm": 0.8,
-        "RightArm": 0.8,
-        "LeftForeArm": 0.8,
-        "RightForeArm": 0.8,
-        "LeftHand": 0.8,
-        "RightHand": 0.8
+  "schema_version": 2,
+  "robot_root_name": "LINK_BASE",
+  "human_root_name": "Hips",
+  "ground_height": 0.0,
+  "human_height_assumption": 1.8,
+  "human_scale_table": {
+    "Hips": 0.85,
+    "Spine2": 0.85,
+    "LeftUpLeg": 0.85,
+    "RightUpLeg": 0.85,
+    "LeftLeg": 0.85,
+    "RightLeg": 0.85,
+    "LeftFootMod": 0.85,
+    "RightFootMod": 0.85,
+    "LeftArm": 0.8,
+    "RightArm": 0.8,
+    "LeftForeArm": 0.8,
+    "RightForeArm": 0.8,
+    "LeftHand": 0.8,
+    "RightHand": 0.8
+  },
+  "stages": [
+    {
+      "LINK_BASE": {
+        "robot": {
+          "body": "LINK_BASE"
+        },
+        "human": {
+          "body": "Hips",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_HIP_ROLL_L": {
+        "robot": {
+          "body": "LINK_HIP_ROLL_L"
+        },
+        "human": {
+          "body": "LeftUpLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_KNEE_PITCH_L": {
+        "robot": {
+          "body": "LINK_KNEE_PITCH_L"
+        },
+        "human": {
+          "body": "LeftLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_ANKLE_ROLL_L": {
+        "robot": {
+          "body": "LINK_ANKLE_ROLL_L"
+        },
+        "human": {
+          "body": "LeftFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "LINK_HIP_ROLL_R": {
+        "robot": {
+          "body": "LINK_HIP_ROLL_R"
+        },
+        "human": {
+          "body": "RightUpLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_KNEE_PITCH_R": {
+        "robot": {
+          "body": "LINK_KNEE_PITCH_R"
+        },
+        "human": {
+          "body": "RightLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_ANKLE_ROLL_R": {
+        "robot": {
+          "body": "LINK_ANKLE_ROLL_R"
+        },
+        "human": {
+          "body": "RightFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "LINK_TORSO_YAW": {
+        "robot": {
+          "body": "LINK_TORSO_YAW"
+        },
+        "human": {
+          "body": "Spine2",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_SHOULDER_ROLL_L": {
+        "robot": {
+          "body": "LINK_SHOULDER_ROLL_L"
+        },
+        "human": {
+          "body": "LeftArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_ELBOW_PITCH_L": {
+        "robot": {
+          "body": "LINK_ELBOW_PITCH_L"
+        },
+        "human": {
+          "body": "LeftForeArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_ELBOW_END_L": {
+        "robot": {
+          "body": "LINK_ELBOW_END_L"
+        },
+        "human": {
+          "body": "LeftHand",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_SHOULDER_ROLL_R": {
+        "robot": {
+          "body": "LINK_SHOULDER_ROLL_R"
+        },
+        "human": {
+          "body": "RightArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_ELBOW_PITCH_R": {
+        "robot": {
+          "body": "LINK_ELBOW_PITCH_R"
+        },
+        "human": {
+          "body": "RightForeArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_ELBOW_END_R": {
+        "robot": {
+          "body": "LINK_ELBOW_END_R"
+        },
+        "human": {
+          "body": "RightHand",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      }
     },
-
-    "ik_match_table1": {
-        "LINK_BASE": [
-            "Hips",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                0.5,
-                0.5
-            ]
-        ],
-        "LINK_HIP_ROLL_L": [
-            "LeftUpLeg",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_KNEE_PITCH_L": [
-            "LeftLeg",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ANKLE_ROLL_L": [
-            "LeftFootMod",
-            100,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.70710678,
-                0.70710678,
-                0.0,
-                0.0
-            ]
-        ],
-        "LINK_HIP_ROLL_R": [
-            "RightUpLeg",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_KNEE_PITCH_R": [
-            "RightLeg",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ANKLE_ROLL_R": [
-            "RightFootMod",
-            100,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.70710678,
-                0.70710678,
-                0.0,
-                0.0
-            ]
-        ],
-        "LINK_TORSO_YAW": [
-            "Spine2",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                0.5,
-                0.5
-            ]
-        ],
-        "LINK_SHOULDER_ROLL_L": [
-            "LeftArm",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ELBOW_PITCH_L": [
-            "LeftForeArm",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                -0.5,
-                0.5,
-                0.5
-            ]
-        ],
-        "LINK_ELBOW_END_L": [
-            "LeftHand",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
--0.5,
-0.5,
-0.5
-            ]
-        ],
-        "LINK_SHOULDER_ROLL_R": [
-            "RightArm",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ELBOW_PITCH_R": [
-            "RightForeArm",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                -0.5,
-                0.5,
-                0.5
-            ]
-        ],
-        "LINK_ELBOW_END_R": [
-            "RightHand",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
+    {
+      "LINK_BASE": {
+        "robot": {
+          "body": "LINK_BASE"
+        },
+        "human": {
+          "body": "Hips",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_HIP_ROLL_L": {
+        "robot": {
+          "body": "LINK_HIP_ROLL_L"
+        },
+        "human": {
+          "body": "LeftUpLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_KNEE_PITCH_L": {
+        "robot": {
+          "body": "LINK_KNEE_PITCH_L"
+        },
+        "human": {
+          "body": "LeftLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_ANKLE_ROLL_L": {
+        "robot": {
+          "body": "LINK_ANKLE_ROLL_L"
+        },
+        "human": {
+          "body": "LeftFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "LINK_HIP_ROLL_R": {
+        "robot": {
+          "body": "LINK_HIP_ROLL_R"
+        },
+        "human": {
+          "body": "RightUpLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_KNEE_PITCH_R": {
+        "robot": {
+          "body": "LINK_KNEE_PITCH_R"
+        },
+        "human": {
+          "body": "RightLeg",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            0.5,
+            0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_ANKLE_ROLL_R": {
+        "robot": {
+          "body": "LINK_ANKLE_ROLL_R"
+        },
+        "human": {
+          "body": "RightFootMod",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.70710678,
+            0.70710678,
+            0.0,
+            0.0
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "LINK_TORSO_YAW": {
+        "robot": {
+          "body": "LINK_TORSO_YAW"
+        },
+        "human": {
+          "body": "Spine2",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "LINK_SHOULDER_ROLL_L": {
+        "robot": {
+          "body": "LINK_SHOULDER_ROLL_L"
+        },
+        "human": {
+          "body": "LeftArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_ELBOW_PITCH_L": {
+        "robot": {
+          "body": "LINK_ELBOW_PITCH_L"
+        },
+        "human": {
+          "body": "LeftForeArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
             -0.5,
             -0.5,
             0.5,
             0.5
-            ]
-        ]
-    },
-    "ik_match_table2": {
-        "LINK_BASE": [
-            "Hips",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                0.5,
-                0.5
-            ]
-        ],
-        "LINK_HIP_ROLL_L": [
-            "LeftUpLeg",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_KNEE_PITCH_L": [
-            "LeftLeg",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ANKLE_ROLL_L": [
-            "LeftFootMod",
-            100,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.70710678,
-                0.70710678,
-                0.0,
-                0.0
-            ]
-        ],
-        "LINK_HIP_ROLL_R": [
-            "RightUpLeg",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_KNEE_PITCH_R": [
-            "RightLeg",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
-                0.5,
-                0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ANKLE_ROLL_R": [
-            "RightFootMod",
-            100,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.70710678,
-                0.70710678,
-                0.0,
-                0.0
-            ]
-        ],
-        "LINK_TORSO_YAW": [
-            "Spine2",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                0.5,
-                0.5
-            ]
-        ],
-        "LINK_SHOULDER_ROLL_L": [
-            "LeftArm",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ELBOW_PITCH_L": [
-            "LeftForeArm",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
--0.5,
-0.5,
-0.5
-            ]
-        ],
-        "LINK_ELBOW_END_L": [
-            "LeftHand",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
--0.5,
-0.5,
-0.5
-            ]
-        ],
-        "LINK_SHOULDER_ROLL_R": [
-            "RightArm",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "LINK_ELBOW_PITCH_R": [
-            "RightForeArm",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_ELBOW_END_L": {
+        "robot": {
+          "body": "LINK_ELBOW_END_L"
+        },
+        "human": {
+          "body": "LeftHand",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
             -0.5,
             0.5,
             0.5
-            ]
-        ],
-        "LINK_ELBOW_END_R": [
-            "RightHand",
-            10,
-            5,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.5,
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_SHOULDER_ROLL_R": {
+        "robot": {
+          "body": "LINK_SHOULDER_ROLL_R"
+        },
+        "human": {
+          "body": "RightArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_ELBOW_PITCH_R": {
+        "robot": {
+          "body": "LINK_ELBOW_PITCH_R"
+        },
+        "human": {
+          "body": "RightForeArm",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
             -0.5,
             0.5,
             0.5
-            ]
-        ]
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      },
+      "LINK_ELBOW_END_R": {
+        "robot": {
+          "body": "LINK_ELBOW_END_R"
+        },
+        "human": {
+          "body": "RightHand",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.5,
+            -0.5,
+            0.5,
+            0.5
+          ]
+        },
+        "position_weight": 10,
+        "orientation_weight": 5
+      }
     }
+  ]
 }

@@ -1,214 +1,277 @@
 {
-    "robot_root_name": "pelvis",
-    "human_root_name": "pelvis",
-    "ground_height": -0.05,
-    "human_height_assumption": 1.8,
-    "use_ik_match_table1": true,
-    "use_ik_match_table2": false,
-    "human_scale_table": {
-        "pelvis": 1.1,
-        "spine3": 1.1,
-
-        "left_hip": 1.1,
-        "right_hip": 1.1,
-        "left_knee": 1.1,
-        "right_knee": 1.1,
-        "left_foot": 1.1,
-        "right_foot": 1.1,
-
-        "left_shoulder": 1.1,
-        "right_shoulder": 1.1,
-        "left_elbow": 1.1,
-        "right_elbow": 1.1
-    },
-
-    "ik_match_table1": {
-        "pelvis": [
-            "pelvis",
-            100,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                -0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "hipRollLeft": [
-            "left_hip",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.4267755048530407,
-                -0.5637931078484661,
-                -0.5637931078484661,
-                -0.4267755048530407
-            ]
-        ],
-        "shinLeft": [
-            "left_knee",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                -0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "toeLeft": [
-            "left_foot",
-            100,
-            10,
-            [
-                0.00,
-                0.00,
-                0.0
-            ],
-            [
-                0.5,
-                -0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "hipRollRight": [
-            "right_hip",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.4267755048530407,
-                -0.5637931078484661,
-                -0.5637931078484661,
-                -0.4267755048530407
-            ]
-        ],
-        "shinRight": [
-            "right_knee",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                -0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "toeRight": [
-            "right_foot",
-            100,
-            10,
-            [
-                -0.00,
-                -0.00,
-                0.0
-            ],
-            [
-                0.5,
-                -0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "torso": [
-            "spine3",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.5,
-                -0.5,
-                -0.5,
-                -0.5
-            ]
-        ],
-        "shoulderRollLeft": [
-            "left_shoulder",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.7071067811865475, 0.0, 0.7071067811865475, 0.0
-            ]
-        ],
-        "elbowLeft": [
-            "left_elbow",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                -0.7071067811865475, 0.0, 0.7071067811865475, 0.0
-            ]
-        ],
-        "shoulderRollRight": [
-            "right_shoulder",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.0,
-                0.70710678,
-                0.0,
-                0.70710678
-            ]
-        ],
-        "elbowRight": [
-            "right_elbow",
-            0,
-            10,
-            [
-                0.0,
-                0.0,
-                0.0
-            ],
-            [
-                0.0,
-                0.70710678,
-                0.0,
-                0.70710678
-            ]
-        ]
-    },
-   "ik_match_table2": {}
+  "schema_version": 2,
+  "robot_root_name": "pelvis",
+  "human_root_name": "pelvis",
+  "ground_height": -0.05,
+  "human_height_assumption": 1.8,
+  "human_scale_table": {
+    "pelvis": 1.1,
+    "spine3": 1.1,
+    "left_hip": 1.1,
+    "right_hip": 1.1,
+    "left_knee": 1.1,
+    "right_knee": 1.1,
+    "left_foot": 1.1,
+    "right_foot": 1.1,
+    "left_shoulder": 1.1,
+    "right_shoulder": 1.1,
+    "left_elbow": 1.1,
+    "right_elbow": 1.1
+  },
+  "stages": [
+    {
+      "pelvis": {
+        "robot": {
+          "body": "pelvis"
+        },
+        "human": {
+          "body": "pelvis",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            -0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "hipRollLeft": {
+        "robot": {
+          "body": "hipRollLeft"
+        },
+        "human": {
+          "body": "left_hip",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.4267755048530407,
+            -0.5637931078484661,
+            -0.5637931078484661,
+            -0.4267755048530407
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "shinLeft": {
+        "robot": {
+          "body": "shinLeft"
+        },
+        "human": {
+          "body": "left_knee",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            -0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "toeLeft": {
+        "robot": {
+          "body": "toeLeft"
+        },
+        "human": {
+          "body": "left_foot",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            -0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "hipRollRight": {
+        "robot": {
+          "body": "hipRollRight"
+        },
+        "human": {
+          "body": "right_hip",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.4267755048530407,
+            -0.5637931078484661,
+            -0.5637931078484661,
+            -0.4267755048530407
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "shinRight": {
+        "robot": {
+          "body": "shinRight"
+        },
+        "human": {
+          "body": "right_knee",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            -0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "toeRight": {
+        "robot": {
+          "body": "toeRight"
+        },
+        "human": {
+          "body": "right_foot",
+          "position": [
+            -0.0,
+            -0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            -0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 100,
+        "orientation_weight": 10
+      },
+      "torso": {
+        "robot": {
+          "body": "torso"
+        },
+        "human": {
+          "body": "spine3",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.5,
+            -0.5,
+            -0.5,
+            -0.5
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "shoulderRollLeft": {
+        "robot": {
+          "body": "shoulderRollLeft"
+        },
+        "human": {
+          "body": "left_shoulder",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.7071067811865475,
+            0.0,
+            0.7071067811865475,
+            0.0
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "elbowLeft": {
+        "robot": {
+          "body": "elbowLeft"
+        },
+        "human": {
+          "body": "left_elbow",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            -0.7071067811865475,
+            0.0,
+            0.7071067811865475,
+            0.0
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "shoulderRollRight": {
+        "robot": {
+          "body": "shoulderRollRight"
+        },
+        "human": {
+          "body": "right_shoulder",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.0,
+            0.70710678,
+            0.0,
+            0.70710678
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      },
+      "elbowRight": {
+        "robot": {
+          "body": "elbowRight"
+        },
+        "human": {
+          "body": "right_elbow",
+          "position": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "rotation": [
+            0.0,
+            0.70710678,
+            0.0,
+            0.70710678
+          ]
+        },
+        "position_weight": 0,
+        "orientation_weight": 10
+      }
+    }
+  ]
 }

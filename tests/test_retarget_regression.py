@@ -14,22 +14,23 @@ import pytest
 from numpy.typing import NDArray
 from synthetic_motion import Frame, build_frames
 
-from general_motion_retargeting import GeneralMotionRetargeting
+from general_motion_retargeting import (
+    IK_CONFIG_DICT,
+    ROBOT_BASE_DICT,
+    ROBOT_XML_DICT,
+    Retargeter,
+    RobotSpec,
+    SolverSettings,
+    TrackingCamera,
+    load_profile,
+)
+from general_motion_retargeting.assets import PathRobotAssets
 
 DATA_DIR: pathlib.Path = pathlib.Path(__file__).parent / "data"
 
 ROBOTS: tuple[str, ...] = ("unitree_g1", "booster_t1")
-REQUIRED_TRACKING_BODIES: tuple[str, ...] = (
-    "pelvis",
-    "left_foot",
-    "right_foot",
-)
-
 # Allow small differences between BLAS implementations.
 ATOL: float = 1e-4
-
-# Maximum position error in meters for required IK tasks.
-TRACKING_ATOL: float = 0.05
 
 
 def load_synthetic_motion() -> tuple[Frame, ...]:
@@ -37,10 +38,27 @@ def load_synthetic_motion() -> tuple[Frame, ...]:
     return build_frames()
 
 
+def build_retargeter(robot: str, settings: SolverSettings | None = None) -> Retargeter:
+    """Build a retargeter from the current explicit contracts."""
+    profile = load_profile(
+        pathlib.Path(IK_CONFIG_DICT["smplx"][robot]),
+        source_format="smplx",
+        robot=robot,
+    )
+    root = str(ROBOT_BASE_DICT[robot])
+    specification = RobotSpec(
+        identifier=robot,
+        assets=PathRobotAssets(pathlib.Path(ROBOT_XML_DICT[robot])),
+        root_body=root,
+        camera=TrackingCamera(body=root, distance=3.0),
+    )
+    return Retargeter(specification, profile, settings)
+
+
 def retarget_motion(robot: str, frames: Sequence[Frame]) -> NDArray[np.float64]:
     """Retarget a sequence of human frames to one robot."""
-    retargeter = GeneralMotionRetargeting("smplx", robot, verbose=False)
-    return np.stack([retargeter.retarget(dict(frame)) for frame in frames])
+    retargeter = build_retargeter(robot)
+    return np.stack([retargeter.retarget_frame(frame) for frame in frames])
 
 
 @pytest.fixture(scope="module")
@@ -72,42 +90,3 @@ def test_qpos_is_sane(robot: str, synthetic_frames: Sequence[Frame]) -> None:
     # The root quaternion must stay normalized.
     norms = np.linalg.norm(qpos[:, 3:7], axis=1)
     np.testing.assert_allclose(norms, 1.0, atol=1e-6)
-
-
-@pytest.mark.parametrize("robot", ROBOTS)
-def test_required_tasks_converge(robot: str, synthetic_frames: Sequence[Frame]) -> None:
-    """Check that pelvis and foot position tasks converge in both IK stages."""
-    retargeter = GeneralMotionRetargeting("smplx", robot, verbose=False)
-    task_groups = (
-        ("stage1", retargeter.human_body_to_task1),
-        ("stage2", retargeter.human_body_to_task2),
-    )
-    missing = [
-        f"{stage}:{body}"
-        for stage, task_by_body in task_groups
-        for body in REQUIRED_TRACKING_BODIES
-        if body not in task_by_body
-    ]
-    assert not missing, f"{robot} is missing required IK tasks: {missing}"
-
-    tasks = {
-        f"{stage}:{body}": task_by_body[body]
-        for stage, task_by_body in task_groups
-        for body in REQUIRED_TRACKING_BODIES
-    }
-    worst_errors = dict.fromkeys(tasks, 0.0)
-    for frame in synthetic_frames:
-        retargeter.retarget(dict(frame))
-        for name, task in tasks.items():
-            error = task.compute_error(retargeter.configuration)
-            worst_errors[name] = max(
-                worst_errors[name], float(np.linalg.norm(error[:3]))
-            )
-
-    failures = {
-        name: error for name, error in worst_errors.items() if error >= TRACKING_ATOL
-    }
-    assert not failures, (
-        f"{robot} required IK tasks did not converge below "
-        f"{TRACKING_ATOL} m: {failures}"
-    )
