@@ -1,6 +1,6 @@
 version = 1
 revision = 3
-requires-python = ">=3.10, <3.14"
+requires-python = ">=3.10.12, <3.14"
 resolution-markers = [
     "python_full_version >= '3.12'",
     "python_full_version == '3.11.*'",
@@ -245,6 +245,7 @@ dependencies = [
     { name = "loop-rate-limiters" },
     { name = "mink" },
     { name = "mujoco" },
+    { name = "mujoco-menagerie" },
     { name = "natsort" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.11.*'" },
@@ -276,6 +277,7 @@ requires-dist = [
     { name = "loop-rate-limiters" },
     { name = "mink" },
     { name = "mujoco" },
+    { name = "mujoco-menagerie", specifier = "==2026.9.0" },
     { name = "natsort" },
     { name = "numpy" },
     { name = "opencv-python" },
@@ -621,6 +623,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/98/b3/8e14f18a4d983697b6cb8b44b436dab9a4bc0dcb445e2ec45147e018a620/mujoco-3.13.0-cp313-cp313-manylinux_2_27_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:862cc7510639824d7740d39a408abc54300febd12432e5e56d52d6c93334cfe7", size = 19104285, upload-time = "2026-09-09T15:38:58.375Z" },
     { url = "https://files.pythonhosted.org/packages/e6/1d/a04b3d96ecd5ada2cf340ea68a163de610bfe4ec8929c4d3edcb9d9c8bb6/mujoco-3.13.0-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:3d0befa6869355a91b7bd452c71a98bc3f93bd94cb96c3f4eaae4172cc6a8975", size = 20379173, upload-time = "2026-09-09T15:39:01.31Z" },
     { url = "https://files.pythonhosted.org/packages/d2/b2/9e26281c4150fdde0fd9277891dd7655e674a118cdb15c4c137c53742968/mujoco-3.13.0-cp313-cp313-win_amd64.whl", hash = "sha256:101571a624e3cf2c2d4c7e08772d50973dc29863587b18f03b753f399538fe8d", size = 17232226, upload-time = "2026-09-09T15:39:03.845Z" },
+]
+
+[[package]]
+name = "mujoco-menagerie"
+version = "2026.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "mujoco" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7e/78/9bb837efbd6fb4fc3506644c59fc006817cf5ded02f7d4c71c82996b2504/mujoco_menagerie-2026.9.0.tar.gz", hash = "sha256:529692ad7293855f3f6f426940f492df758e8486e323101a89c6118c7996fda9", size = 24416, upload-time = "2026-09-04T16:52:46.308Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1f/97/5e99584a51dfeb0f86b1643f9718365de6e3abc79c5fab0599280d46a2d8/mujoco_menagerie-2026.9.0-py3-none-any.whl", hash = "sha256:6e664043f773691bf44861b2d157599e75bf3443e8430ffda122b4f42a82bbd7", size = 29673, upload-time = "2026-09-04T16:52:45.153Z" },
 ]
 
 [[package]]

@@ -6,7 +6,23 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from general_motion_retargeting import load_profile
+from general_motion_retargeting import build_catalog, load_profile
+
+
+@pytest.mark.parametrize(
+    ("source_format", "robot", "path"),
+    [
+        (source_format, robot, reference.path)
+        for (source_format, robot), reference in build_catalog(
+            discover=False
+        ).profiles.items()
+    ],
+)
+def test_loads_every_builtin_profile(
+    source_format: str, robot: str, path: Path
+) -> None:
+    profile = load_profile(path, source_format=source_format, robot=robot)
+    assert profile.stages
 
 
 def test_loads_v2_named_matches(tmp_path: Path) -> None:

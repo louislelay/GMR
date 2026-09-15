@@ -15,16 +15,10 @@ from numpy.typing import NDArray
 from synthetic_motion import Frame, build_frames
 
 from general_motion_retargeting import (
-    IK_CONFIG_DICT,
-    ROBOT_BASE_DICT,
-    ROBOT_XML_DICT,
     Retargeter,
-    RobotSpec,
     SolverSettings,
-    TrackingCamera,
-    load_profile,
+    build_catalog,
 )
-from general_motion_retargeting.assets import PathRobotAssets
 
 DATA_DIR: pathlib.Path = pathlib.Path(__file__).parent / "data"
 
@@ -40,19 +34,12 @@ def load_synthetic_motion() -> tuple[Frame, ...]:
 
 def build_retargeter(robot: str, settings: SolverSettings | None = None) -> Retargeter:
     """Build a retargeter from the current explicit contracts."""
-    profile = load_profile(
-        pathlib.Path(IK_CONFIG_DICT["smplx"][robot]),
-        source_format="smplx",
-        robot=robot,
+    catalog = build_catalog(discover=False)
+    return Retargeter(
+        catalog.robot(robot),
+        catalog.profile("smplx", robot),
+        settings,
     )
-    root = str(ROBOT_BASE_DICT[robot])
-    specification = RobotSpec(
-        identifier=robot,
-        assets=PathRobotAssets(pathlib.Path(ROBOT_XML_DICT[robot])),
-        root_body=root,
-        camera=TrackingCamera(body=root, distance=3.0),
-    )
-    return Retargeter(specification, profile, settings)
 
 
 def retarget_motion(robot: str, frames: Sequence[Frame]) -> NDArray[np.float64]:
