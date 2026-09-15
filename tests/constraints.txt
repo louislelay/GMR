@@ -1,8 +1,0 @@
-# Solver-critical version pins used by CI so the golden-trajectory tests are
-# reproducible. Update deliberately, regenerating goldens if results change.
-mujoco==3.13.0
-mink==1.3.0
-numpy==2.2.6
-scipy==1.15.3
-qpsolvers==4.13.0
-daqp==0.9.1

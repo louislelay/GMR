@@ -25,15 +25,16 @@ jobs:
             assets/unitree_g1
             assets/booster_t1
             pyproject.toml
+            uv.lock
             README.md
           sparse-checkout-cone-mode: false
       - uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python }}
-      - name: Install CPU torch
-        # setup-uv already created and activated .venv (python-version is set).
-        run: uv pip install torch --index-url https://download.pytorch.org/whl/cpu
+          enable-cache: true
       - name: Install GMR
-        run: uv pip install -e . pytest -c tests/constraints.txt
+        # Locked resolution from uv.lock, so tests run against the exact
+        # dependency versions the goldens were generated with.
+        run: uv sync --frozen
       - name: Run tests
-        run: uv run --no-project pytest tests -v
+        run: uv run --no-sync pytest tests -v

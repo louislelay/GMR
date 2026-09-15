@@ -3,8 +3,12 @@
 Each test retargets a deterministic synthetic human motion (see
 synthetic_motion.py) and compares the resulting qpos trajectory against a
 committed golden file. Any change to the IK behavior shows up as a diff
-against the goldens; intentional changes must regenerate them with
-generate_goldens.py and justify the diff in the pull request.
+against the goldens. Intentional changes must regenerate them with
+
+    GMR_REGEN_GOLDENS=1 uv run pytest tests/test_retarget_regression.py
+
+then justify the diff in the pull request and attach a rendered video of the
+new goldens so the motion can be certified by eye.
 
 Set GMR_TEST_MOTION_DIR to a folder of AMASS-style SMPL-X .npz files to also
 run the (local-only, license-gated) real-motion smoke test.
@@ -48,8 +52,12 @@ def synthetic_frames():
 
 @pytest.mark.parametrize("robot", ROBOTS)
 def test_qpos_matches_golden(robot, synthetic_frames):
-    golden = np.load(DATA_DIR / f"golden_qpos_{robot}.npy")
     qpos = retarget_motion(robot, synthetic_frames)
+    golden_path = DATA_DIR / f"golden_qpos_{robot}.npy"
+    if os.environ.get("GMR_REGEN_GOLDENS"):
+        np.save(golden_path, qpos)
+        pytest.skip(f"regenerated {golden_path.name}; verify the diff and commit")
+    golden = np.load(golden_path)
     assert qpos.shape == golden.shape
     np.testing.assert_allclose(qpos, golden, rtol=0.0, atol=ATOL)
 

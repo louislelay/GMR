@@ -10,8 +10,9 @@ the 120-degree rotation about (1, 1, 1): (0.5, 0.5, 0.5, 0.5).
 
 Frames are generated in memory, in the exact input format of
 GeneralMotionRetargeting.retarget(). The goldens in tests/data were produced
-from these frames by generate_goldens.py; positions are rounded to 1e-6 m so
-the frames are bit-stable across platforms.
+from these frames (see test_retarget_regression.py for how to regenerate
+them); positions are rounded to 1e-6 m so the frames are bit-stable across
+platforms.
 """
 
 import math
