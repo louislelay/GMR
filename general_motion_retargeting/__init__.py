@@ -2,6 +2,17 @@ from rich import print
 
 from .data_loader import load_robot_motion
 from .kinematics_model import KinematicsModel
+from .models import (
+    FrameTransform,
+    HumanFrame,
+    HumanMotion,
+    Match,
+    RetargetingProfile,
+    RobotMotion,
+    RobotSpec,
+    SolverSettings,
+    TrackingCamera,
+)
 from .motion_retarget import GeneralMotionRetargeting
 from .neck_retarget import human_head_to_robot_neck
 from .params import (
@@ -12,6 +23,7 @@ from .params import (
     ROBOT_XML_DICT,
     VIEWER_CAM_DISTANCE_DICT,
 )
+from .profiles import load_profile, validate_human_frame
 from .robot_motion_viewer import RobotMotionViewer, draw_frame
 
 try:
