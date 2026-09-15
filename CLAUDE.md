@@ -17,10 +17,10 @@ conda install -c conda-forge libstdcxx-ng -y
 
 ### Core Components
 
-- **`GeneralMotionRetargeting`** (`general_motion_retargeting/motion_retarget.py`): Main class for motion retargeting using inverse kinematics (IK) solver built on mink/mujoco
+- **`Retargeter`** (`general_motion_retargeting/retargeter.py`): Stateful differential-IK session built from an explicit robot, profile, and solver settings
 - **`KinematicsModel`** (`general_motion_retargeting/kinematics_model.py`): Handles robot kinematics calculations
-- **`RobotMotionViewer`** (`general_motion_retargeting/robot_motion_viewer.py`): MuJoCo-based visualization for robot motions
-- **Configuration System** (`general_motion_retargeting/params.py`): Simplified robot definitions and IK config mappings - cleaned to focus on core supported robots
+- **`MotionWorkspace`** (`general_motion_retargeting/visualization.py`): Browser-based mjviser workspace for robot and source motions
+- **`Catalog`** (`general_motion_retargeting/catalog.py`): Menagerie-backed robot/profile lookup and external provider discovery
 
 ### Data Flow
 
@@ -31,84 +31,36 @@ conda install -c conda-forge libstdcxx-ng -y
 
 ### Supported Robots
 
-Core robot models in `assets/` directory:
-- Unitree G1 (`unitree_g1`) - 29 DOF humanoid
-- Booster T1 (`booster_t1`) - Full-body humanoid 
-- Booster K1 (`booster_k1`) - 22 DOF humanoid
-- Stanford ToddlerBot (`stanford_toddy`) - Research humanoid
-- Fourier N1 (`fourier_n1`) - Commercial humanoid
-- ENGINEAI PM01 (`engineai_pm01`) - Industrial humanoid
-- Kuavo S45 (`kuavo_s45`) - 28 DOF humanoid
-- HighTorque Hi (`hightorque_hi`) - 25 DOF humanoid
-- Galaxea R1 Pro (`galaxea_r1pro`) - 24 DOF wheeled humanoid
-
-Additional models retained in ROBOT_BASE_DICT for compatibility:
-- `unitree_g1_with_hands` (43 DOF with dexterous hands)
-- `dex31_left_hand`, `dex31_right_hand` (hand components)
+Built-in models come from MuJoCo Menagerie. Use `build_catalog().robots` as
+the source of truth. External packages can register additional robots and
+profiles through `gmr.providers`.
 
 ## Common Commands
 
 ### Single Motion Retargeting
 ```bash
-# SMPL-X to robot
-python scripts/smplx_to_robot.py --smplx_file <path> --robot <robot_name> --save_path <output.pkl>
-
-# BVH to robot  
-python scripts/bvh_to_robot.py --bvh_file <path> --robot <robot_name> --save_path <output.pkl>
-```
-
-### Batch Processing
-```bash
-# Process datasets
-python scripts/smplx_to_robot_dataset.py
-python scripts/bvh_to_robot_dataset.py
+retarget --source <source> --robot <robot_name> --input <path> --output <path>
 ```
 
 ### Visualization
 ```bash
 # Visualize saved robot motion
-python scripts/vis_robot_motion.py --robot <robot_name> --robot_motion_path <path.pkl>
+visualize --robot-motion <motion.npz>
 ```
 
-Add `--record_video --video_path <output.mp4>` to any visualization command to record video.
+Use `stream --source <source> --robot <robot_name>` for live retargeting.
 
 ## Key Technical Details
 
 - **IK Solver**: Uses mink library with configurable solver (default: "daqp") and damping (default: 5e-1)
-- **Human Height Scaling**: Automatic scaling based on `actual_human_height` parameter vs config assumptions
+- **Human Height Scaling**: Scales from `HumanMotion.height` and the selected profile assumption
 - **Real-time Performance**: Optimized for 60-70 FPS on high-end CPUs for teleoperation use cases
-- **Body Model Dependencies**: Requires SMPL-X body models in `assets/body_models/smplx/`
+- **Body Model Dependencies**: Resolve SMPL-X body models from an explicit path or `GMR_SMPLX_MODELS`
 
 ## File Organization
 
-- `scripts/`: Entry point scripts for different retargeting workflows
 - `general_motion_retargeting/`: Core library code
-- `assets/`: Robot models (MuJoCo XML) and body models (SMPL-X)
-- `general_motion_retargeting/ik_configs/`: JSON configuration files for human-to-robot body mappings:
-  - SMPL-X configs: `smplx_to_{g1,t1,k1,toddy,n1,pm01,kuavo,hi,r1pro}.json`
-  - BVH configs: `bvh_to_{g1,t1,toddy,n1,pm01}.json`
-  - FBX configs: `fbx_to_g1.json`
-
-## Project Status & Features
-
-**Current State**: Production-ready motion retargeting system with extensive robot support
-
-**Key Capabilities**:
-- **Multi-format Input**: SMPL-X (AMASS/OMOMO), BVH (LAFAN1), FBX (OptiTrack)
-- **Real-time Performance**: 60-70 FPS on high-end hardware for teleoperation
-- **9 Robot Models**: From research platforms to commercial humanoids
-- **Robust IK**: Mink-based solver with automatic human height scaling
-- **Visualization**: MuJoCo-based viewer with video recording capabilities
-- **Batch Processing**: Dataset-level retargeting workflows
-
-**Use Cases**:
-- Real-time whole-body teleoperation (see [TWIST](https://github.com/YanjieZe/TWIST))
-- RL policy training data generation
-- Motion capture to robot deployment
-- Cross-platform humanoid motion transfer
-
-**Recent Additions** (2025):
-- Booster K1 support (9th robot)
-- Dexterous hand integration (G1 + Dex31)
-- Wheeled humanoid support (Galaxea R1 Pro)
-- Enhanced OptiTrack real-time streaming
+- `general_motion_retargeting/cli/`: The three installed command entry points
+- `general_motion_retargeting/sources/`: Lazy live-source adapters
+- `general_motion_retargeting/ik_configs/`: Versioned named retargeting profiles
+- `tests/`: Regression, contract, application, visualization, and streaming tests
