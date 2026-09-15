@@ -1,14 +1,6 @@
 """Golden-trajectory regression tests for the retargeting pipeline.
 
-Each test retargets a deterministic synthetic human motion (see
-synthetic_motion.py) and compares the resulting qpos trajectory against a
-committed golden file. Any change to the IK behavior shows up as a diff
-against the goldens. Intentional changes must regenerate them with
-
-    GMR_REGEN_GOLDENS=1 uv run pytest tests/test_retarget_regression.py
-
-then justify the diff in the pull request and attach a rendered video of the
-new goldens so the motion can be certified by eye.
+Set ``GMR_REGEN_GOLDENS=1`` to regenerate the expected trajectories.
 """
 
 import os
@@ -24,12 +16,10 @@ DATA_DIR = pathlib.Path(__file__).parent / "data"
 
 ROBOTS = ["unitree_g1", "booster_t1"]
 
-# Cross-platform tolerance: QP solves accumulate small floating-point
-# differences across BLAS implementations. Real regressions are orders of
-# magnitude larger.
+# Allow small differences between BLAS implementations.
 ATOL = 1e-4
 
-# Convergence bound (meters) on the position error of high-weight IK tasks.
+# Maximum position error in meters for high-weight IK tasks.
 TRACKING_ATOL = 0.05
 
 
@@ -74,16 +64,7 @@ def test_qpos_is_sane(robot, synthetic_frames):
 
 @pytest.mark.parametrize("robot", ROBOTS)
 def test_high_weight_tasks_converge(robot, synthetic_frames):
-    """The IK must actually reach the targets it was asked to track.
-
-    Unlike the golden comparison, this is an absolute correctness check: for
-    every frame, the position error of each tier-one frame task (position
-    weight >= 50: pelvis/waist and feet) must converge below TRACKING_ATOL.
-    Lower-weight posture tasks (elbows, knees, ...) are excluded: they guide
-    the pose but are unreachable by design when human and robot limb
-    proportions differ. This test fails when the solver loop, target scaling,
-    or task offsets break, independent of any golden data.
-    """
+    """Check that high-weight position tasks converge."""
     retargeter = GeneralMotionRetargeting("smplx", robot, verbose=False)
     tasks = [
         task

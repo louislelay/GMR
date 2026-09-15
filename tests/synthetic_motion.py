@@ -1,19 +1,4 @@
-"""Deterministic synthetic human motion used by the regression tests.
-
-The motion is a simple parametric "march in place while moving forward" for a
-1.8 m human, expressed in the SMPL-X global-frame convention used by GMR:
-z-up world, subject facing +x, one (position, wxyz quaternion) pair per body.
-
-All quaternions are the constant T-pose global rotation of an upright z-up
-person facing +x, which in SMPL-X convention (y-up, facing +z, left = +x) is
-the 120-degree rotation about (1, 1, 1): (0.5, 0.5, 0.5, 0.5).
-
-Frames are generated in memory, in the exact input format of
-GeneralMotionRetargeting.retarget(). The goldens in tests/data were produced
-from these frames (see test_retarget_regression.py for how to regenerate
-them); positions are rounded to 1e-6 m so the frames are bit-stable across
-platforms.
-"""
+"""Synthetic marching motion for golden regression tests."""
 
 import math
 
@@ -24,6 +9,7 @@ NUM_FRAMES = 90
 STRIDE_HZ = 1.0
 FORWARD_SPEED = 0.3
 
+# Upright SMPL-X T-pose converted to GMR's z-up coordinates.
 TPOSE_QUAT = (0.5, 0.5, 0.5, 0.5)
 
 # T-pose body positions for a 1.8 m human, z-up, facing +x, left = +y.
@@ -72,5 +58,5 @@ def _build_frame(t: float) -> Frame:
 
 
 def build_frames() -> list[Frame]:
-    """All frames of the synthetic motion, ready to feed to retarget()."""
+    """Build the synthetic motion frames."""
     return [_build_frame(i / FPS) for i in range(NUM_FRAMES)]
