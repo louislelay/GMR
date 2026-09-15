@@ -283,9 +283,9 @@ Install PICO SDK:
 
         # Install into GMR's environment: run from the GMR repo root,
         # uv pip targets GMR's .venv automatically.
-        cd path/to/GMR
+        cd PATH/TO/GMR
         uv pip install pybind11 cmake
-        uv pip install --no-build-isolation path/to/XRoboToolkit-PC-Service-Pybind
+        uv pip install --no-build-isolation PATH/TO/XRoboToolkit-PC-Service-Pybind
         ```
 
 You should be all set!
@@ -327,7 +327,7 @@ First, install GVHMR by following [their official instructions](https://github.c
 And run their demo that can extract human pose from monocular video:
 
 ```bash
-cd path/to/GVHMR
+cd PATH/TO/GVHMR
 python tools/demo/demo.py --video=docs/example_video/tennis.mp4 -s
 ```
 
