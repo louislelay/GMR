@@ -281,8 +281,7 @@ Install PICO SDK:
         cp tmp/XRoboToolkit-PC-Service/RoboticsService/PXREARobotSDK/build/libPXREARobotSDK.so lib/
         # rm -rf tmp
 
-        # Install into GMR's environment: run from the GMR repo root,
-        # uv pip targets GMR's .venv automatically.
+        # Install into GMR's environment from the GMR repo root.
         cd PATH/TO/GMR
         uv pip install pybind11 cmake
         uv pip install --no-build-isolation PATH/TO/XRoboToolkit-PC-Service-Pybind
