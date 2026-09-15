@@ -1,6 +1,8 @@
 """Golden-trajectory regression tests for the retargeting pipeline.
 
-Set ``GMR_REGEN_GOLDENS=1`` to regenerate the expected trajectories.
+Regenerate the expected trajectories with:
+
+    GMR_REGEN_GOLDENS=1 uv run pytest tests/test_retarget_regression.py
 """
 
 import os
