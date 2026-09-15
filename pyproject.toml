@@ -31,6 +31,7 @@ dependencies = [
     "imageio[ffmpeg]",
     "pydantic>=2.11",
     "mujoco-menagerie==2026.9.0",
+    "mjviser>=0.0.14",
 ]
 
 [project.urls]
@@ -38,6 +39,7 @@ Repository = "https://github.com/YanjieZe/GMR"
 
 [project.scripts]
 retarget = "general_motion_retargeting.cli.retarget:main"
+visualize = "general_motion_retargeting.cli.visualize:main"
 
 [dependency-groups]
 dev = [
