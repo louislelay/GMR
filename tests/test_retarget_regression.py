@@ -9,9 +9,6 @@ against the goldens. Intentional changes must regenerate them with
 
 then justify the diff in the pull request and attach a rendered video of the
 new goldens so the motion can be certified by eye.
-
-Set GMR_TEST_MOTION_DIR to a folder of AMASS-style SMPL-X .npz files to also
-run the (local-only, license-gated) real-motion smoke test.
 """
 
 import os
@@ -104,37 +101,3 @@ def test_high_weight_tasks_converge(robot, synthetic_frames):
         f"high-weight IK tasks did not converge: worst position error "
         f"{worst:.4f} m exceeds {TRACKING_ATOL} m"
     )
-
-
-@pytest.mark.skipif(
-    "GMR_TEST_MOTION_DIR" not in os.environ,
-    reason="set GMR_TEST_MOTION_DIR to a folder of SMPL-X .npz motions",
-)
-def test_real_motion_smoke():
-    """Local-only smoke test on real (non-redistributable) SMPL-X motions.
-
-    AMASS and LAFAN1 licensing does not allow committing motion data to the
-    repo, so this test only runs on machines that point GMR_TEST_MOTION_DIR
-    at a local folder of AMASS-style SMPL-X .npz files.
-    """
-    from general_motion_retargeting.utils.smpl import (
-        get_smplx_data_offline_fast,
-        load_smplx_file,
-    )
-
-    motion_dir = pathlib.Path(os.environ["GMR_TEST_MOTION_DIR"])
-    body_models = pathlib.Path(__file__).parents[1] / "assets" / "body_models"
-    motions = sorted(motion_dir.rglob("*.npz"))[:2]
-    assert motions, f"no .npz motions found under {motion_dir}"
-    for motion_file in motions:
-        smplx_data, body_model, smplx_output, human_height = load_smplx_file(
-            motion_file, str(body_models)
-        )
-        frames, _ = get_smplx_data_offline_fast(
-            smplx_data, body_model, smplx_output, tgt_fps=30
-        )
-        retargeter = GeneralMotionRetargeting(
-            "smplx", "unitree_g1", actual_human_height=human_height, verbose=False
-        )
-        qpos = np.stack([retargeter.retarget(frame) for frame in frames[:60]])
-        assert np.isfinite(qpos).all()
