@@ -1,19 +1,22 @@
 """Synthetic marching motion for golden regression tests."""
 
 import math
+from collections.abc import Mapping
+from typing import TypeAlias
 
 import numpy as np
+from numpy.typing import NDArray
 
-FPS = 30
-NUM_FRAMES = 90
-STRIDE_HZ = 1.0
-FORWARD_SPEED = 0.3
+FPS: int = 30
+NUM_FRAMES: int = 90
+STRIDE_HZ: float = 1.0
+FORWARD_SPEED: float = 0.3
 
 # Upright SMPL-X T-pose converted to GMR's z-up coordinates.
-TPOSE_QUAT = (0.5, 0.5, 0.5, 0.5)
+TPOSE_QUAT: tuple[float, float, float, float] = (0.5, 0.5, 0.5, 0.5)
 
 # T-pose body positions for a 1.8 m human, z-up, facing +x, left = +y.
-TPOSE_POSITIONS = {
+TPOSE_POSITIONS: Mapping[str, tuple[float, float, float]] = {
     "pelvis": (0.0, 0.0, 0.95),
     "spine3": (0.0, 0.0, 1.25),
     "left_hip": (0.0, 0.09, 0.90),
@@ -30,7 +33,8 @@ TPOSE_POSITIONS = {
     "right_wrist": (0.0, -0.70, 1.40),
 }
 
-Frame = dict[str, tuple[np.ndarray, np.ndarray]]
+Vector: TypeAlias = NDArray[np.float64]
+Frame: TypeAlias = Mapping[str, tuple[Vector, Vector]]
 
 
 def _build_frame(t: float) -> Frame:
@@ -39,7 +43,7 @@ def _build_frame(t: float) -> Frame:
     forward = FORWARD_SPEED * t
     bob = 0.03 * math.sin(2.0 * phase)
 
-    frame = {}
+    frame: dict[str, tuple[Vector, Vector]] = {}
     for body, (x, y, z) in TPOSE_POSITIONS.items():
         px, py, pz = x + forward, y, z + bob
         if body == "left_foot":
@@ -57,6 +61,6 @@ def _build_frame(t: float) -> Frame:
     return frame
 
 
-def build_frames() -> list[Frame]:
+def build_frames() -> tuple[Frame, ...]:
     """Build the synthetic motion frames."""
-    return [_build_frame(i / FPS) for i in range(NUM_FRAMES)]
+    return tuple(_build_frame(i / FPS) for i in range(NUM_FRAMES))
