@@ -1,0 +1,134 @@
+"""Application services shared by the Python API and command line."""
+
+import hashlib
+from pathlib import Path
+
+import numpy as np
+
+from .catalog import Catalog, build_catalog
+from .models import HumanMotion, RobotMotion
+from .motion_io import save_robot_motion
+from .retargeter import Retargeter
+from .utils.lafan1 import load_bvh_file
+from .utils.smpl import get_smplx_data_offline_fast, load_smplx_file
+
+
+def _source_identifier(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return f"sha256:{digest.hexdigest()}"
+
+
+def _normalized_source(source: str) -> str:
+    if source == "bvh":
+        return "bvh_lafan1"
+    return source
+
+
+class RetargetApplication:
+    """Retarget files through injected catalog and source-model resources."""
+
+    catalog: Catalog
+    body_models: Path | None
+
+    def __init__(
+        self,
+        *,
+        catalog: Catalog | None = None,
+        body_models: Path | None = None,
+    ) -> None:
+        """Initialize the application service.
+
+        Args:
+            catalog: Robot and profile catalog.
+            body_models: SMPL-X body-model root containing ``smplx/``.
+        """
+        self.catalog = catalog or build_catalog()
+        self.body_models = body_models
+
+    def load_source(self, path: Path, *, source: str, target_fps: float) -> HumanMotion:
+        """Load one supported source file into typed global frames.
+
+        Args:
+            path: Source motion path.
+            source: Source adapter/profile identifier.
+            target_fps: Output sampling rate.
+
+        Returns:
+            Typed human motion.
+        """
+        normalized = _normalized_source(source)
+        if normalized == "smplx":
+            return self._load_smplx(path, target_fps)
+        if normalized.startswith("bvh_"):
+            return self._load_bvh(path, normalized, target_fps)
+        raise ValueError(f"file source {source!r} is not supported; use smplx or bvh")
+
+    def _load_smplx(self, path: Path, target_fps: float) -> HumanMotion:
+        if self.body_models is None:
+            raise ValueError(
+                "SMPL-X retargeting requires body_models or GMR_SMPLX_MODELS"
+            )
+        data, body_model, output, height = load_smplx_file(path, self.body_models)
+        frames, aligned_fps = get_smplx_data_offline_fast(
+            data, body_model, output, tgt_fps=target_fps
+        )
+        source_fps = float(np.asarray(data["mocap_frame_rate"]).item())
+        return HumanMotion(
+            frames=tuple(frames),
+            fps=float(aligned_fps),
+            height=float(height),
+            source_format="smplx",
+            source_identifier=_source_identifier(path),
+            source_fps=source_fps,
+        )
+
+    def _load_bvh(self, path: Path, source: str, target_fps: float) -> HumanMotion:
+        format_name = source.removeprefix("bvh_")
+        frames, height = load_bvh_file(path, format=format_name)
+        return HumanMotion(
+            frames=tuple(frames),
+            fps=target_fps,
+            height=float(height),
+            source_format=source,
+            source_identifier=_source_identifier(path),
+        )
+
+    def retarget_file(
+        self,
+        input_path: Path,
+        output_path: Path,
+        *,
+        source: str,
+        robot: str,
+        target_fps: float = 30.0,
+        offset_to_ground: bool = False,
+    ) -> RobotMotion:
+        """Retarget one source file and save canonical NPZ.
+
+        Args:
+            input_path: Source motion file.
+            output_path: Canonical NPZ destination.
+            source: Source adapter/profile identifier.
+            robot: Catalog robot identifier.
+            target_fps: Requested output sampling rate.
+            offset_to_ground: Shift each human frame to ground clearance.
+
+        Returns:
+            Saved immutable robot motion.
+        """
+        normalized = _normalized_source(source)
+        human_motion = self.load_source(
+            input_path, source=normalized, target_fps=target_fps
+        )
+        retargeter = Retargeter(
+            self.catalog.robot(robot),
+            self.catalog.profile(normalized, robot),
+        )
+        robot_motion = retargeter.retarget(
+            human_motion, offset_to_ground=offset_to_ground
+        )
+        save_robot_motion(output_path, robot_motion)
+        return robot_motion

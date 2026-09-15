@@ -1,3 +1,4 @@
+from .application import RetargetApplication
 from .assets import PathRobotAssets
 from .catalog import (
     Catalog,
