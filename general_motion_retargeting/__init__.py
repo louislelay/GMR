@@ -1,5 +1,6 @@
 from rich import print
 
+from .assets import PathRobotAssets
 from .data_loader import load_robot_motion
 from .kinematics_model import KinematicsModel
 from .models import (
@@ -13,7 +14,6 @@ from .models import (
     SolverSettings,
     TrackingCamera,
 )
-from .motion_retarget import GeneralMotionRetargeting
 from .neck_retarget import human_head_to_robot_neck
 from .params import (
     ASSET_ROOT,
@@ -24,6 +24,7 @@ from .params import (
     VIEWER_CAM_DISTANCE_DICT,
 )
 from .profiles import load_profile, validate_human_frame
+from .retargeter import Retargeter
 from .robot_motion_viewer import RobotMotionViewer, draw_frame
 
 try:
