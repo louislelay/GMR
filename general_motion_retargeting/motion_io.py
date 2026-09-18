@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import TypeVar
 
 import numpy as np
 
@@ -24,15 +25,11 @@ _REQUIRED_KEYS = frozenset(
         "joint_names",
     }
 )
+_Scalar = TypeVar("_Scalar", str, int, float)
 
 
 def save_robot_motion(path: Path, motion: RobotMotion) -> None:
-    """Atomically save a canonical robot motion as compressed NPZ.
-
-    Args:
-        path: Destination ending in ``.npz``.
-        motion: Validated robot motion.
-    """
+    """Atomically save a canonical robot motion as compressed NPZ."""
     if path.suffix.lower() != ".npz":
         raise ValueError("robot motion path must end in .npz")
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -60,41 +57,41 @@ def save_robot_motion(path: Path, motion: RobotMotion) -> None:
     temporary_path.replace(path)
 
 
-def _scalar(data: np.lib.npyio.NpzFile, key: str):
+def _scalar(
+    data: np.lib.npyio.NpzFile,
+    key: str,
+    expected_type: type[_Scalar],
+) -> _Scalar:
     value = np.asarray(data[key])
     if value.shape != ():
         raise ValueError(f"{key} must be a scalar")
-    return value.item()
+    item = value.item()
+    if not isinstance(item, expected_type):
+        raise ValueError(f"{key} must be a {expected_type.__name__}")
+    return item
 
 
 def load_robot_motion(path: Path) -> RobotMotion:
-    """Load and validate a canonical robot-motion NPZ.
-
-    Args:
-        path: Source NPZ path.
-
-    Returns:
-        Immutable validated robot motion.
-    """
+    """Load and validate a canonical robot-motion NPZ."""
     with np.load(path, allow_pickle=False) as data:
         missing = _REQUIRED_KEYS.difference(data.files)
         if missing:
             names = ", ".join(sorted(missing))
             raise ValueError(f"robot motion is missing fields: {names}")
-        version = int(_scalar(data, "schema_version"))
+        version = _scalar(data, "schema_version", int)
         if version != SCHEMA_VERSION:
             raise ValueError(
                 f"unsupported robot-motion schema {version}; expected {SCHEMA_VERSION}"
             )
-        source_identifier = str(_scalar(data, "source_identifier")) or None
-        source_fps_value = float(_scalar(data, "source_fps"))
+        source_identifier = _scalar(data, "source_identifier", str) or None
+        source_fps_value = _scalar(data, "source_fps", float)
         source_fps = None if np.isnan(source_fps_value) else source_fps_value
         return RobotMotion(
-            robot=str(_scalar(data, "robot")),
-            source_format=str(_scalar(data, "source_format")),
-            profile=str(_scalar(data, "profile")),
-            fps=float(_scalar(data, "fps")),
-            start_time=float(_scalar(data, "start_time")),
+            robot=_scalar(data, "robot", str),
+            source_format=_scalar(data, "source_format", str),
+            profile=_scalar(data, "profile", str),
+            fps=_scalar(data, "fps", float),
+            start_time=_scalar(data, "start_time", float),
             source_identifier=source_identifier,
             source_fps=source_fps,
             root_positions=np.asarray(data["root_positions"]),

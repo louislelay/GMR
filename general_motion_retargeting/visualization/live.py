@@ -7,8 +7,8 @@ import mujoco as mj
 import numpy as np
 import viser
 
-from .models import RetargetingProfile, RobotSpec
-from .streaming import FrameSubscription, RetargetedFrame
+from ..models import RetargetingProfile, RobotSpec
+from ..streaming import FrameSubscription, RetargetedFrame
 
 _SOURCE_GROUP = 3
 _ROBOT_GROUP = 4
@@ -26,17 +26,8 @@ class LiveWorkspace:
         fps: float,
         server: viser.ViserServer | None = None,
     ) -> None:
-        """Create the live browser workspace.
-
-        Args:
-            robot: Robot scene provider.
-            profile: Active retargeting profile.
-            subscription: Latest-value viewer subscription.
-            fps: Viewer update rate.
-            server: Optional injected Viser server.
-        """
+        """Create the live browser workspace."""
         self.subscription = subscription
-        self._last_frame: RetargetedFrame | None = None
         specification = robot.assets.load_scene_spec()
         for keyframe in list(specification.keys):
             specification.delete(keyframe)
@@ -94,12 +85,12 @@ class LiveWorkspace:
         )
 
         @source_sites.on_update
-        def _(_) -> None:
+        def _(_: viser.GuiEvent) -> None:
             self.viewer.scene.site_groups_visible[_SOURCE_GROUP] = source_sites.value
             self.viewer.scene.refresh_visualization()
 
         @robot_sites.on_update
-        def _(_) -> None:
+        def _(_: viser.GuiEvent) -> None:
             self.viewer.scene.site_groups_visible[_ROBOT_GROUP] = robot_sites.value
             self.viewer.scene.refresh_visualization()
 
@@ -128,7 +119,6 @@ class LiveWorkspace:
         frame = self.subscription.read_latest()
         if frame is None:
             return
-        self._last_frame = frame
         self._apply(frame)
 
     def _render(self, scene: mjviser.ViserMujocoScene) -> None:

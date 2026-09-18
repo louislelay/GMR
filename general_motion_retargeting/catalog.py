@@ -122,7 +122,7 @@ class Catalog:
 
 
 def _builtin_provider(context: ProviderContext) -> CatalogContribution:
-    root = Path(__file__).parent / "ik_configs"
+    root = Path(__file__).parent / "profiles" / "builtin"
 
     def assets(name: str, model_entry: str, scene_entry: str) -> MenagerieAssets:
         return MenagerieAssets(
@@ -186,10 +186,7 @@ def _builtin_provider(context: ProviderContext) -> CatalogContribution:
         ("bvh_lafan1", "unitree_g1"): "bvh_lafan1_to_g1.json",
         ("bvh_lafan1", "fourier_n1"): "bvh_lafan1_to_n1.json",
         ("bvh_lafan1", "pal_talos"): "bvh_to_talos.json",
-        ("bvh_xsens", "unitree_g1"): "bvh_xsens_to_g1.json",
         ("bvh_nokov", "unitree_g1"): "bvh_nokov_to_g1.json",
-        ("fbx", "unitree_g1"): "fbx_to_g1.json",
-        ("fbx_offline", "unitree_g1"): "fbx_offline_to_g1.json",
         ("xsens_mvn", "unitree_g1"): "xsens_mvn_to_g1.json",
         ("xrobot", "unitree_g1"): "xrobot_to_g1.json",
     }
@@ -206,16 +203,7 @@ def build_catalog(
     context: ProviderContext | None = None,
     discover: bool = True,
 ) -> Catalog:
-    """Build the built-in catalog plus explicit and installed providers.
-
-    Args:
-        providers: Explicit extension providers.
-        context: Shared provider resources.
-        discover: Load providers from the ``gmr.providers`` entry-point group.
-
-    Returns:
-        Immutable merged catalog.
-    """
+    """Build a catalog from built-in, explicit, and installed providers."""
     resolved_context = context or ProviderContext(mujoco_menagerie.Cache())
     resolved_providers = list(providers)
     if discover:

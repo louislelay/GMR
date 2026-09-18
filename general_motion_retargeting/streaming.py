@@ -1,28 +1,20 @@
 """Reusable live retargeting with independent consumer subscriptions."""
 
+from __future__ import annotations
+
 import threading
 import time
 from collections import deque
 from dataclasses import dataclass
 from enum import Enum
-from types import MappingProxyType
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 import numpy as np
 
-from .models import FloatArray, HumanFrame
-from .retargeter import Retargeter
+from .models import FloatArray, HumanFrame, _readonly_frame
 
-
-def _freeze_frame(frame: HumanFrame) -> HumanFrame:
-    frozen: dict[str, tuple[FloatArray, FloatArray]] = {}
-    for name, (position, rotation) in frame.items():
-        position_copy = np.asarray(position, dtype=np.float64).copy()
-        rotation_copy = np.asarray(rotation, dtype=np.float64).copy()
-        position_copy.setflags(write=False)
-        rotation_copy.setflags(write=False)
-        frozen[name] = (position_copy, rotation_copy)
-    return MappingProxyType(frozen)
+if TYPE_CHECKING:
+    from .retargeter import Retargeter
 
 
 @dataclass(frozen=True)
@@ -37,7 +29,7 @@ class HumanFrameSample:
 
     def __post_init__(self) -> None:
         """Own and freeze the frame arrays."""
-        object.__setattr__(self, "frame", _freeze_frame(self.frame))
+        object.__setattr__(self, "frame", _readonly_frame(self.frame))
 
 
 @dataclass(frozen=True)
@@ -58,7 +50,7 @@ class RetargetedFrame:
         qpos = np.asarray(self.qpos, dtype=np.float64).copy()
         qpos.setflags(write=False)
         object.__setattr__(self, "qpos", qpos)
-        object.__setattr__(self, "source_frame", _freeze_frame(self.source_frame))
+        object.__setattr__(self, "source_frame", _readonly_frame(self.source_frame))
 
 
 class LiveSource(Protocol):
@@ -231,13 +223,7 @@ class RetargetedStream:
         *,
         publisher: FramePublisher | None = None,
     ) -> None:
-        """Prepare a stream without starting its worker.
-
-        Args:
-            source: Exclusive live human-frame source.
-            retargeter: Exclusive stateful solver session.
-            publisher: Optional injected frame publisher.
-        """
+        """Prepare a stream without starting its worker."""
         if source.source_format != retargeter.profile.source_format:
             raise ValueError(
                 f"source emits {source.source_format!r}, profile expects "
@@ -315,7 +301,7 @@ class RetargetedStream:
                 raise TimeoutError("live source did not stop within two seconds")
         self.publisher.close()
 
-    def __enter__(self) -> "RetargetedStream":
+    def __enter__(self) -> RetargetedStream:
         """Start and return this stream."""
         self.start()
         return self

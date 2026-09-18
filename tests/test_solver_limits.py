@@ -16,7 +16,10 @@ def test_solve_ik_receives_limits_keyword(monkeypatch: pytest.MonkeyPatch) -> No
     )
     calls: list[tuple[tuple[object, ...], dict[str, object]]] = []
 
-    def recording_solve_ik(*args, **kwargs):
+    def recording_solve_ik(
+        *args: object,
+        **kwargs: object,
+    ) -> np.ndarray:
         calls.append((args, kwargs))
         return np.zeros(retargeter.model.nv)
 

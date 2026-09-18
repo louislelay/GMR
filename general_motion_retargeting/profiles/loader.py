@@ -2,15 +2,16 @@
 
 import json
 import math
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from pathlib import Path
 from types import MappingProxyType
 from typing import Literal
 
 import numpy as np
+import numpy.typing as npt
 from pydantic import BaseModel, ConfigDict, Field
 
-from .models import FrameTransform, HumanFrame, Match, RetargetingProfile
+from ..models import FrameTransform, HumanFrame, Match, RetargetingProfile
 
 Vector3 = tuple[float, float, float]
 Quaternion = tuple[float, float, float, float]
@@ -46,7 +47,12 @@ class _ProfileData(BaseModel):
     stages: tuple[dict[str, _MatchData], ...]
 
 
-def _immutable_array(values: Sequence[float], *, size: int, where: str) -> np.ndarray:
+def _immutable_array(
+    values: npt.ArrayLike,
+    *,
+    size: int,
+    where: str,
+) -> np.ndarray:
     array = np.asarray(values, dtype=np.float64)
     if array.shape != (size,):
         raise ValueError(f"{where} must contain {size} values, got {array.shape}")
@@ -115,16 +121,7 @@ def _validate_common(
 
 
 def load_profile(path: Path, *, source_format: str, robot: str) -> RetargetingProfile:
-    """Load and validate a retargeting profile.
-
-    Args:
-        path: JSON profile path.
-        source_format: Human-frame convention produced by the source adapter.
-        robot: Identifier of the target robot.
-
-    Returns:
-        Immutable validated retargeting profile.
-    """
+    """Load and validate an immutable retargeting profile."""
     raw = json.loads(path.read_text(encoding="utf-8"))
     data = _ProfileData.model_validate(raw)
     stages = tuple(_matches(stage) for stage in data.stages)
@@ -152,12 +149,7 @@ def load_profile(path: Path, *, source_format: str, robot: str) -> RetargetingPr
 
 
 def validate_human_frame(frame: HumanFrame, required_bodies: frozenset[str]) -> None:
-    """Validate names and pose arrays in one human frame.
-
-    Args:
-        frame: Mapping from body names to position and wxyz orientation.
-        required_bodies: Bodies required by the active profile.
-    """
+    """Validate names and pose arrays in one human frame."""
     missing = required_bodies.difference(frame)
     if missing:
         names = ", ".join(sorted(missing))

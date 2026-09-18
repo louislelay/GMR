@@ -10,8 +10,8 @@ import mujoco as mj
 import numpy as np
 import viser
 
-from .models import HumanMotion, RetargetingProfile, RobotMotion, RobotSpec
-from .motion_io import save_robot_motion
+from ..models import HumanMotion, RetargetingProfile, RobotMotion, RobotSpec
+from ..motion_io import save_robot_motion
 
 _SOURCE_GROUP = 3
 _ROBOT_SITE_GROUP = 4
@@ -69,29 +69,27 @@ class MotionWorkspace:
         source_time_offset: float = 0.0,
         server: viser.ViserServer | None = None,
     ) -> None:
-        """Create a synchronized browser workspace.
-
-        Args:
-            robot: Robot scene provider when robot motion is present.
-            robot_motion: Optional canonical robot motion.
-            source_motion: Optional source motion and SMPL-X mesh.
-            profile: Optional profile used to place robot target sites.
-            source_time_offset: Source timeline offset relative to robot seconds.
-            server: Optional injected Viser server.
-        """
+        """Create a synchronized browser workspace."""
         if robot_motion is None and source_motion is None:
             raise ValueError("visualize requires robot motion, source motion, or both")
         if robot_motion is not None and robot is None:
             raise ValueError("robot motion requires a robot specification")
-        if robot_motion is not None and robot_motion.robot != robot.identifier:
+        if (
+            robot_motion is not None
+            and robot is not None
+            and robot_motion.robot != robot.identifier
+        ):
             raise ValueError(
                 f"motion targets {robot_motion.robot!r}, not {robot.identifier!r}"
             )
-        if profile is not None and robot is not None:
-            if profile.robot != robot.identifier:
-                raise ValueError(
-                    f"profile targets {profile.robot!r}, not {robot.identifier!r}"
-                )
+        if (
+            profile is not None
+            and robot is not None
+            and profile.robot != robot.identifier
+        ):
+            raise ValueError(
+                f"profile targets {profile.robot!r}, not {robot.identifier!r}"
+            )
         self.robot = robot
         self.robot_motion = robot_motion
         self.source_motion = source_motion
@@ -206,8 +204,6 @@ class MotionWorkspace:
     def _playback_duration(self) -> float:
         durations = [
             motion.duration
-            if isinstance(motion, RobotMotion)
-            else len(motion.frames) / motion.fps
             for motion in (self.robot_motion, self.source_motion)
             if motion is not None
         ]
@@ -260,7 +256,10 @@ class MotionWorkspace:
         if not edges:
             return np.empty((0, 2, 3), dtype=np.float64)
         if source:
-            frame = self.source_motion.frames[self._source_frame(self._time)]
+            source_motion = self.source_motion
+            if source_motion is None:
+                return np.empty((0, 2, 3), dtype=np.float64)
+            frame = source_motion.frames[self._source_frame(self._time)]
             positions = np.stack([frame[name][0] for name in self._source_names])
             if self.robot_motion is not None:
                 positions[:, 1] += _SIDE_OFFSET
@@ -304,9 +303,10 @@ class MotionWorkspace:
                 )
 
     def _human_vertices(self) -> np.ndarray:
-        vertices = self.source_motion.body_vertices[
-            self._source_frame(self._time)
-        ].copy()
+        source_motion = self.source_motion
+        if source_motion is None or source_motion.body_vertices is None:
+            raise RuntimeError("source mesh is not available")
+        vertices = source_motion.body_vertices[self._source_frame(self._time)].copy()
         if self.robot_motion is not None:
             vertices[:, 1] += _SIDE_OFFSET
         return vertices
@@ -358,29 +358,31 @@ class MotionWorkspace:
             render = self.server.gui.add_button("Render selected range to video")
 
         @timeline.on_update
-        def _(_) -> None:
+        def _(_: viser.GuiEvent) -> None:
             with self._lock:
                 self._apply_time(float(timeline.value))
                 self._render(self.viewer.scene)
 
         @source_sites.on_update
-        def _(_) -> None:
+        def _(_: viser.GuiEvent) -> None:
             self._set_site_visibility(_SOURCE_GROUP, source_sites.value)
 
         @robot_sites.on_update
-        def _(_) -> None:
+        def _(_: viser.GuiEvent) -> None:
             self._set_site_visibility(_ROBOT_SITE_GROUP, robot_sites.value)
 
         @source_skeleton.on_update
-        def _(_) -> None:
-            self._source_skeleton.visible = source_skeleton.value
+        def _(_: viser.GuiEvent) -> None:
+            if self._source_skeleton is not None:
+                self._source_skeleton.visible = source_skeleton.value
 
         @robot_skeleton.on_update
-        def _(_) -> None:
-            self._robot_skeleton.visible = robot_skeleton.value
+        def _(_: viser.GuiEvent) -> None:
+            if self._robot_skeleton is not None:
+                self._robot_skeleton.visible = robot_skeleton.value
 
         @download.on_click
-        def _(event) -> None:
+        def _(event: viser.GuiEvent) -> None:
             if event.client is None or self.robot_motion is None:
                 return
             start, end = (float(value) for value in trim.value)
@@ -390,10 +392,11 @@ class MotionWorkspace:
                 event.client.send_file_download("trimmed_motion.npz", path.read_bytes())
 
         @render.on_click
-        def _(event) -> None:
+        def _(event: viser.GuiEvent) -> None:
             if event.client is None:
                 return
-            self._render_video(event.client, tuple(float(v) for v in trim.value))
+            start, end = trim.value
+            self._render_video(event.client, (float(start), float(end)))
 
     def _render_video(
         self, client: viser.ClientHandle, bounds: tuple[float, float]

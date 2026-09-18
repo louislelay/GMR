@@ -1,12 +1,17 @@
 """Typed domain models shared by GMR applications and extensions."""
 
+from __future__ import annotations
+
 from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Protocol, TypeAlias
+from types import MappingProxyType
+from typing import TYPE_CHECKING, Protocol, TypeAlias
 
-import mujoco as mj
 import numpy as np
 import numpy.typing as npt
+
+if TYPE_CHECKING:
+    import mujoco as mj
 
 FloatArray: TypeAlias = npt.NDArray[np.float64]
 IntArray: TypeAlias = npt.NDArray[np.int64]
@@ -17,6 +22,24 @@ def _readonly_float_array(value: npt.ArrayLike) -> FloatArray:
     array = np.asarray(value, dtype=np.float64).copy()
     array.setflags(write=False)
     return array
+
+
+def _readonly_int_array(value: npt.ArrayLike) -> IntArray:
+    array = np.asarray(value, dtype=np.int64).copy()
+    array.setflags(write=False)
+    return array
+
+
+def _readonly_frame(frame: HumanFrame) -> HumanFrame:
+    return MappingProxyType(
+        {
+            name: (
+                _readonly_float_array(position),
+                _readonly_float_array(rotation),
+            )
+            for name, (position, rotation) in frame.items()
+        }
+    )
 
 
 @dataclass(frozen=True)
@@ -31,6 +54,46 @@ class HumanMotion:
     source_fps: float | None = None
     body_vertices: FloatArray | None = None
     body_faces: IntArray | None = None
+
+    def __post_init__(self) -> None:
+        """Validate the motion and freeze owned arrays."""
+        if not self.frames:
+            raise ValueError("human motion must contain at least one frame")
+        if not np.isfinite(self.fps) or self.fps <= 0.0:
+            raise ValueError("fps must be positive and finite")
+        if not np.isfinite(self.height) or self.height <= 0.0:
+            raise ValueError("height must be positive and finite")
+        if self.source_fps is not None and (
+            not np.isfinite(self.source_fps) or self.source_fps <= 0.0
+        ):
+            raise ValueError("source_fps must be positive and finite")
+        frames = tuple(_readonly_frame(frame) for frame in self.frames)
+        object.__setattr__(self, "frames", frames)
+
+        if (self.body_vertices is None) != (self.body_faces is None):
+            raise ValueError("body_vertices and body_faces must be provided together")
+        if self.body_vertices is None or self.body_faces is None:
+            return
+        vertices = _readonly_float_array(self.body_vertices)
+        faces = _readonly_int_array(self.body_faces)
+        if vertices.ndim != 3 or vertices.shape[0] != len(frames):
+            raise ValueError("body_vertices must have shape (frames, vertices, 3)")
+        if vertices.shape[2] != 3:
+            raise ValueError("body_vertices must have shape (frames, vertices, 3)")
+        if faces.ndim != 2 or faces.shape[1] != 3:
+            raise ValueError("body_faces must have shape (faces, 3)")
+        object.__setattr__(self, "body_vertices", vertices)
+        object.__setattr__(self, "body_faces", faces)
+
+    @property
+    def frame_count(self) -> int:
+        """Number of motion frames."""
+        return len(self.frames)
+
+    @property
+    def duration(self) -> float:
+        """Motion duration in seconds."""
+        return self.frame_count / self.fps
 
 
 @dataclass(frozen=True)
@@ -109,13 +172,8 @@ class RobotMotion:
             axis=1,
         )
 
-    def trim(self, start: float, end: float) -> "RobotMotion":
-        """Return a non-destructive time slice.
-
-        Args:
-            start: Inclusive start time in seconds.
-            end: Exclusive end time in seconds.
-        """
+    def trim(self, start: float, end: float) -> RobotMotion:
+        """Return the motion between two times in seconds."""
         if not 0.0 <= start < end <= self.duration:
             raise ValueError(
                 f"trim bounds must satisfy 0 <= start < end <= {self.duration}"
