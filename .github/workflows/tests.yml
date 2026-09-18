@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
-      - run: uvx ruff format --check general_motion_retargeting scripts tests
-      - run: uvx ruff check general_motion_retargeting scripts tests
+      - run: uvx ruff format --check general_motion_retargeting tests
+      - run: uvx ruff check general_motion_retargeting tests
 
   tests:
     runs-on: ubuntu-latest
@@ -25,13 +25,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Keep CI fast: only the packages, tests, and the robot assets the
-          # regression tests use (the full assets tree is ~1.2 GB).
+          # Robot models resolve through the pinned Menagerie cache.
           sparse-checkout: |
             general_motion_retargeting
             tests
-            assets/unitree_g1
-            assets/booster_t1
             pyproject.toml
             uv.lock
             README.md
@@ -46,3 +43,28 @@ jobs:
         run: uv sync --frozen
       - name: Run tests
         run: uv run --no-sync pytest tests -v
+
+  wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv build --wheel
+      - run: uv venv /tmp/gmr-wheel
+      - run: uv pip install --python /tmp/gmr-wheel/bin/python dist/*.whl
+      - name: Import installed wheel
+        run: |
+          cd /tmp
+          /tmp/gmr-wheel/bin/python -c "import general_motion_retargeting"
+      - name: Check wheel contents
+        run: |
+          /tmp/gmr-wheel/bin/python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          wheel = next(Path("dist").glob("*.whl"))
+          with ZipFile(wheel) as archive:
+              names = archive.namelist()
+          assert "general_motion_retargeting/py.typed" in names
+          assert not any(name.startswith("assets/") for name in names)
+          PY
