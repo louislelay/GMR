@@ -4,7 +4,7 @@
 [![arXiv 2510.02252](https://img.shields.io/badge/arXiv-2510.02252-b31b1b.svg)](https://arxiv.org/abs/2510.02252)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![GMR pipeline](./assets/GMR_pipeline.png)
+![GMR pipeline](https://raw.githubusercontent.com/YanjieZe/GMR/master/assets/GMR_pipeline.png)
 
 GMR retargets offline and live human motion to humanoid robots. It provides a
 typed Python API, canonical NPZ motion files, Menagerie-backed robot models,

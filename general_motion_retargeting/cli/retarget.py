@@ -49,14 +49,7 @@ def _output_path(input_root: Path, output_root: Path, source: Path) -> Path:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Run file or directory retargeting.
-
-    Args:
-        argv: Optional command arguments excluding the executable name.
-
-    Returns:
-        Process exit status.
-    """
+    """Run file or directory retargeting."""
     args = _parser().parse_args(argv)
     body_models = args.body_models
     if body_models is None and os.environ.get("GMR_SMPLX_MODELS"):

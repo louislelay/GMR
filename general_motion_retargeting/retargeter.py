@@ -43,13 +43,7 @@ class Retargeter:
         profile: RetargetingProfile,
         settings: SolverSettings | None = None,
     ) -> None:
-        """Initialize the MuJoCo and Mink session.
-
-        Args:
-            robot: Target robot description and model provider.
-            profile: Source-to-robot retargeting parameters.
-            settings: Optional solver and convergence settings.
-        """
+        """Initialize one MuJoCo and Mink session."""
         if profile.robot != robot.identifier:
             raise ValueError(
                 f"profile targets {profile.robot!r}, not {robot.identifier!r}"
@@ -243,16 +237,7 @@ class Retargeter:
         human_height: float | None = None,
         offset_to_ground: bool = False,
     ) -> FloatArray:
-        """Retarget one frame while preserving solver state.
-
-        Args:
-            frame: Global human body positions and wxyz orientations.
-            human_height: Source subject height in meters, when known.
-            offset_to_ground: Shift the lowest human foot to ground clearance.
-
-        Returns:
-            Copied robot qpos.
-        """
+        """Retarget one frame while preserving solver state."""
         scaled = self._scaled_frame(frame, human_height)
         if offset_to_ground:
             scaled = self._offset_to_ground(scaled)
@@ -264,17 +249,7 @@ class Retargeter:
     def retarget(
         self, motion: HumanMotion, *, offset_to_ground: bool = False
     ) -> RobotMotion:
-        """Retarget a complete human motion.
-
-        Args:
-            motion: Typed source motion.
-            offset_to_ground: Shift each frame to ground clearance.
-
-        Returns:
-            Typed robot motion.
-        """
-        if not motion.frames:
-            raise ValueError("human motion must contain at least one frame")
+        """Retarget a complete human motion."""
         qpos = np.stack(
             [
                 self.retarget_frame(

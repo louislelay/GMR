@@ -9,8 +9,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.1.0
       - run: uvx ruff format --check general_motion_retargeting tests
       - run: uvx ruff check general_motion_retargeting tests
 
@@ -23,7 +23,7 @@ jobs:
         # development version (.python-version).
         python: ["3.10", "3.13"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Robot models resolve through the pinned Menagerie cache.
           sparse-checkout: |
@@ -33,7 +33,7 @@ jobs:
             uv.lock
             README.md
           sparse-checkout-cone-mode: false
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v10.1.0
         with:
           python-version: ${{ matrix.python }}
           enable-cache: true
@@ -47,15 +47,22 @@ jobs:
   wheel:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-      - run: uv build --wheel
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.1.0
+      - run: uv build --wheel --clear
       - run: uv venv /tmp/gmr-wheel
       - run: uv pip install --python /tmp/gmr-wheel/bin/python dist/*.whl
       - name: Import installed wheel
         run: |
           cd /tmp
-          /tmp/gmr-wheel/bin/python -c "import general_motion_retargeting"
+          /tmp/gmr-wheel/bin/python - <<'PY'
+          import general_motion_retargeting as gmr
+
+          assert all(hasattr(gmr, name) for name in gmr.__all__)
+          PY
+          /tmp/gmr-wheel/bin/retarget --help
+          /tmp/gmr-wheel/bin/visualize --help
+          /tmp/gmr-wheel/bin/stream --help
       - name: Check wheel contents
         run: |
           /tmp/gmr-wheel/bin/python - <<'PY'
@@ -66,5 +73,18 @@ jobs:
           with ZipFile(wheel) as archive:
               names = archive.namelist()
           assert "general_motion_retargeting/py.typed" in names
+          assert "general_motion_retargeting/profiles/builtin/smplx_to_g1.json" in names
           assert not any(name.startswith("assets/") for name in names)
+          assert not any(
+              "/ik_configs/" in name or "/utils/" in name
+              for name in names
+          )
+          removed = {
+              "general_motion_retargeting/kinematics_model.py",
+              "general_motion_retargeting/neck_retarget.py",
+              "general_motion_retargeting/rot_utils.py",
+              "general_motion_retargeting/torch_utils.py",
+              "general_motion_retargeting/utils/lafan_vendor/extract.py",
+          }
+          assert removed.isdisjoint(names)
           PY

@@ -3,14 +3,11 @@
 import hashlib
 from pathlib import Path
 
-import numpy as np
-
 from .catalog import Catalog, build_catalog
 from .models import HumanMotion, RobotMotion
 from .motion_io import save_robot_motion
 from .retargeter import Retargeter
-from .utils.lafan1 import load_bvh_file
-from .utils.smpl import get_smplx_data_offline_fast, load_smplx_file
+from .sources.bvh import load_bvh_motion
 
 
 def _source_identifier(path: Path) -> str:
@@ -39,26 +36,12 @@ class RetargetApplication:
         catalog: Catalog | None = None,
         body_models: Path | None = None,
     ) -> None:
-        """Initialize the application service.
-
-        Args:
-            catalog: Robot and profile catalog.
-            body_models: SMPL-X body-model root containing ``smplx/``.
-        """
+        """Initialize file retargeting resources."""
         self.catalog = catalog or build_catalog()
         self.body_models = body_models
 
     def load_source(self, path: Path, *, source: str, target_fps: float) -> HumanMotion:
-        """Load one supported source file into typed global frames.
-
-        Args:
-            path: Source motion path.
-            source: Source adapter/profile identifier.
-            target_fps: Output sampling rate.
-
-        Returns:
-            Typed human motion.
-        """
+        """Load one supported source motion."""
         normalized = _normalized_source(source)
         if normalized == "smplx":
             return self._load_smplx(path, target_fps)
@@ -71,43 +54,36 @@ class RetargetApplication:
             raise ValueError(
                 "SMPL-X retargeting requires body_models or GMR_SMPLX_MODELS"
             )
-        data, body_model, output, height = load_smplx_file(path, self.body_models)
-        frames, aligned_fps = get_smplx_data_offline_fast(
-            data, body_model, output, tgt_fps=target_fps
-        )
-        source_fps = float(np.asarray(data["mocap_frame_rate"]).item())
-        source_vertices = np.asarray(
-            output.vertices.detach().cpu().numpy(), dtype=np.float64
-        )
-        sample_times = np.linspace(
-            0.0, len(source_vertices) - 1, len(frames), dtype=np.float64
-        )
-        lower = np.floor(sample_times).astype(np.int64)
-        upper = np.minimum(lower + 1, len(source_vertices) - 1)
-        alpha = (sample_times - lower)[:, None, None]
-        vertices = (1.0 - alpha) * source_vertices[lower] + alpha * source_vertices[
-            upper
-        ]
+        from .sources.smplx import load_smplx_motion
+
+        data = load_smplx_motion(path, self.body_models, target_fps=target_fps)
         return HumanMotion(
-            frames=tuple(frames),
-            fps=float(aligned_fps),
-            height=float(height),
+            frames=data.frames,
+            fps=data.fps,
+            height=data.height,
             source_format="smplx",
             source_identifier=_source_identifier(path),
-            source_fps=source_fps,
-            body_vertices=vertices,
-            body_faces=np.asarray(body_model.faces, dtype=np.int64),
+            source_fps=data.source_fps,
+            body_vertices=data.vertices,
+            body_faces=data.faces,
         )
 
     def _load_bvh(self, path: Path, source: str, target_fps: float) -> HumanMotion:
-        format_name = source.removeprefix("bvh_")
-        frames, height = load_bvh_file(path, format=format_name)
+        convention = source.removeprefix("bvh_")
+        if convention not in {"lafan1", "nokov"}:
+            raise ValueError(f"unsupported BVH convention: {convention}")
+        data = load_bvh_motion(
+            path,
+            convention=convention,
+            target_fps=target_fps,
+        )
         return HumanMotion(
-            frames=tuple(frames),
-            fps=target_fps,
-            height=float(height),
+            frames=data.frames,
+            fps=data.fps,
+            height=data.height,
             source_format=source,
             source_identifier=_source_identifier(path),
+            source_fps=data.source_fps,
         )
 
     def retarget_file(
@@ -120,19 +96,7 @@ class RetargetApplication:
         target_fps: float = 30.0,
         offset_to_ground: bool = False,
     ) -> RobotMotion:
-        """Retarget one source file and save canonical NPZ.
-
-        Args:
-            input_path: Source motion file.
-            output_path: Canonical NPZ destination.
-            source: Source adapter/profile identifier.
-            robot: Catalog robot identifier.
-            target_fps: Requested output sampling rate.
-            offset_to_ground: Shift each human frame to ground clearance.
-
-        Returns:
-            Saved immutable robot motion.
-        """
+        """Retarget one source file and save canonical NPZ."""
         normalized = _normalized_source(source)
         human_motion = self.load_source(
             input_path, source=normalized, target_fps=target_fps

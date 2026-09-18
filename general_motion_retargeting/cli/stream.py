@@ -4,10 +4,10 @@ import argparse
 from collections.abc import Sequence
 
 from ..catalog import build_catalog
-from ..live_visualization import LiveWorkspace
 from ..retargeter import Retargeter
 from ..sources import SourceOptions, create_live_source
 from ..streaming import RetargetedStream
+from ..visualization import LiveWorkspace
 
 
 def _parser() -> argparse.ArgumentParser:

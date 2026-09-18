@@ -71,7 +71,7 @@ _REQUIRED_BODIES = {
 
 
 class XsensSource:
-    """Xsens MVN source backed by GMR's UDP adapter."""
+    """Xsens MVN source backed by the optional parser SDK."""
 
     def __init__(
         self,
@@ -80,13 +80,7 @@ class XsensSource:
         fps: float = 60.0,
         human_height: float | None = None,
     ) -> None:
-        """Configure the UDP source.
-
-        Args:
-            port: MVN UDP port.
-            fps: Nominal source frame rate.
-            human_height: Optional measured performer height.
-        """
+        """Configure the UDP source."""
         self._port = port
         self._fps = fps
         self._human_height = human_height

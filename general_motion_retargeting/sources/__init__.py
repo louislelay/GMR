@@ -21,21 +21,13 @@ class SourceOptions:
 class SourceFactory(Protocol):
     """Factory loaded from the ``gmr.live_sources`` entry-point group."""
 
-    def __call__(self, options: SourceOptions) -> LiveSource:
+    def __call__(self, options: SourceOptions, /) -> LiveSource:
         """Create one unopened source."""
         ...
 
 
 def create_live_source(name: str, options: SourceOptions) -> LiveSource:
-    """Create a built-in or installed live source.
-
-    Args:
-        name: Source identifier.
-        options: Common source configuration.
-
-    Returns:
-        Unopened source adapter.
-    """
+    """Create a built-in or installed live source."""
     builtins: dict[str, SourceFactory] = {
         "pico": lambda value: PicoSource(fps=value.fps or 60.0),
         "xsens": lambda value: XsensSource(
@@ -56,3 +48,12 @@ def create_live_source(name: str, options: SourceOptions) -> LiveSource:
         raise KeyError(
             f"unknown live source {name!r}; available: {available}"
         ) from None
+
+
+__all__ = [
+    "PicoSource",
+    "SourceFactory",
+    "SourceOptions",
+    "XsensSource",
+    "create_live_source",
+]
