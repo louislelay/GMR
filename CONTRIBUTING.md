@@ -17,10 +17,11 @@ uv sync
 Before opening a pull request, run:
 
 ```bash
-uv run ruff format --check general_motion_retargeting tests
-uv run ruff check general_motion_retargeting tests
-uv run pytest
+make check
 ```
+
+Use `make format` to apply formatting and safe lint fixes, `make lint` to check
+style, or `make test` to run the test suite independently.
 
 Keep `uv.lock` synchronized when changing `pyproject.toml`.
 
