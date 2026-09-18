@@ -28,7 +28,7 @@ For repository development:
 git clone https://github.com/YanjieZe/GMR.git
 cd GMR
 uv sync
-uv run pytest
+make test
 ```
 
 Robot models are downloaded and checksum-verified by the pinned
