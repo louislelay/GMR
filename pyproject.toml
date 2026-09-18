@@ -29,6 +29,7 @@ dependencies = [
     "protobuf",
     "redis[hiredis]",
     "imageio[ffmpeg]",
+    "pydantic>=2.11",
 ]
 
 [project.urls]
@@ -63,4 +64,4 @@ ignore = ["E722", "F403", "F841"]
 include = ["general_motion_retargeting*"]
 
 [tool.setuptools.package-data]
-general_motion_retargeting = ["ik_configs/*.json"]
+general_motion_retargeting = ["ik_configs/*.json", "py.typed"]
