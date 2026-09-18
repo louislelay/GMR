@@ -297,9 +297,6 @@ You should be able to see the retargeted robot motion in a mujoco window.
 
 ### Retargeting from SMPL-X (AMASS, OMOMO) to Robot
 
-> [!NOTE]
-> NOTE: after install SMPL-X, change `ext` in `smplx/body_models.py` from `npz` to `pkl` if you are using SMPL-X pkl files.
-
 Retarget a single motion:
 
 ```bash
