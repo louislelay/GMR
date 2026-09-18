@@ -26,6 +26,8 @@ class HumanMotion:
     fps: float
     height: float
     source_format: str
+    source_identifier: str | None = None
+    source_fps: float | None = None
 
 
 @dataclass(frozen=True)
